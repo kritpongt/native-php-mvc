@@ -21,31 +21,36 @@ final class ResolveLocale implements Middleware
 
 	public function handle(Request $request, Closure $next): Response
 	{
-		$cookieName = (string) $this->config->get('locale.cookie', 'locale');
+		$localeCookie = (string) $this->config->get('locale.cookie', 'locale');
 
 		$path = $request->path(); // e.g. /en/backoffice
 		$segments = explode('/', ltrim($path, '/'));
 		$localeSegment = $segments[0] ?? '';
+
+		$rest = $path;
+		if(preg_match('/^[a-z]{2}$/i', $localeSegment)){
+			$rest = '/'.implode('/', array_slice($segments, 1));
+		}
 
 		// valid /{locale} prefix -> activate it, strip it, remember it
 		if($this->translator->isSupported($localeSegment)){
 			$this->translator->setLocale($localeSegment);
 
 			// remainder after the locale segment; keep one leading slash, ''-> '/'
-			$rest = '/'.implode('/', array_slice($segments, 1));
+			// $rest = '/'.implode('/', array_slice($segments, 1));
 
 			$response = $next($request->withPath($rest));
 
-			return $response->withCookie($cookieName, $localeSegment, self::ONE_YEAR);
+			return $response->withCookie($localeCookie, $localeSegment, self::ONE_YEAR);
 		}
 
-		$cookie = (string) $request->cookie($cookieName, '');
+		$cookie = (string) $request->cookie($localeCookie, '');
 		$locale = $this->translator->isSupported($cookie)
 			? $cookie
 			: (string) $this->config->get('locale.default', 'en');
 
 		if($request->method() === 'GET'){
-			return Response::redirect('/'.$locale.$path, 302);
+			return Response::redirect('/'.$locale.$rest, 302);
 		}
 
 		$this->translator->setLocale($locale);
