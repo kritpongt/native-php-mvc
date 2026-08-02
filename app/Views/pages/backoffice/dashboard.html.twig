@@ -1,0 +1,72 @@
+{% extends 'layouts/backoffice.html.twig' %}
+
+{% block title %}Dashboard - Backoffice{% endblock %}
+{% block nav_active %}dashboard{% endblock %}
+
+{% block main %}
+<div class="mb-5">
+    <h1 class="text-xl font-medium">แดชบอร์ด</h1>
+    <p class="text-sm text-fg-secondary mt-0.5">สวัสดี {{ user.name }} · ภาพรวมระบบ</p>
+</div>
+
+{# placeholder numbers - wire these to repositories later #}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+    <div class="bg-surface-1 rounded-lg p-4">
+        <div class="text-sm text-fg-secondary">ผู้ใช้ทั้งหมด</div>
+        <div class="text-2xl font-medium mt-1">1,248</div>
+        <div class="text-xs text-success-text mt-1">+6.2%</div>
+    </div>
+    <div class="bg-surface-1 rounded-lg p-4">
+        <div class="text-sm text-fg-secondary">ออนไลน์ตอนนี้</div>
+        <div class="text-2xl font-medium mt-1">37</div>
+        <div class="text-xs text-fg-muted mt-1">ใน 24 ชม.</div>
+    </div>
+    <div class="bg-surface-1 rounded-lg p-4">
+        <div class="text-sm text-fg-secondary">Login ล้มเหลว</div>
+        <div class="text-2xl font-medium mt-1">12</div>
+        <div class="text-xs text-danger-text mt-1">ต้องตรวจสอบ</div>
+    </div>
+    <div class="bg-surface-1 rounded-lg p-4">
+        <div class="text-sm text-fg-secondary">บทบาท</div>
+        <div class="text-2xl font-medium mt-1">8</div>
+        <div class="text-xs text-fg-muted mt-1">RBAC</div>
+    </div>
+</div>
+
+<div class="bg-surface-2 border border-line rounded-xl overflow-hidden">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-line">
+        <span class="text-sm font-medium">ผู้ใช้ล่าสุด</span>
+        <a href="/backoffice/users" class="text-xs text-accent-text">ดูทั้งหมด</a>
+    </div>
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="text-fg-muted text-left">
+                <th class="font-normal px-4 py-2">ชื่อ</th>
+                <th class="font-normal px-4 py-2">บทบาท</th>
+                <th class="font-normal px-4 py-2">สถานะ</th>
+                <th class="font-normal px-4 py-2">เข้าใช้ล่าสุด</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-t border-line">
+                <td class="px-4 py-2.5">สมชาย ใจดี</td>
+                <td class="px-4 py-2.5 text-fg-secondary">Admin</td>
+                <td class="px-4 py-2.5"><span class="bg-success-bg text-success-text text-xs px-2 py-0.5 rounded">active</span></td>
+                <td class="px-4 py-2.5 text-fg-secondary">2 นาทีที่แล้ว</td>
+            </tr>
+            <tr class="border-t border-line">
+                <td class="px-4 py-2.5">Alice Wong</td>
+                <td class="px-4 py-2.5 text-fg-secondary">Editor</td>
+                <td class="px-4 py-2.5"><span class="bg-success-bg text-success-text text-xs px-2 py-0.5 rounded">active</span></td>
+                <td class="px-4 py-2.5 text-fg-secondary">1 ชม.ที่แล้ว</td>
+            </tr>
+            <tr class="border-t border-line">
+                <td class="px-4 py-2.5">John Park</td>
+                <td class="px-4 py-2.5 text-fg-secondary">Viewer</td>
+                <td class="px-4 py-2.5"><span class="bg-warning-bg text-warning-text text-xs px-2 py-0.5 rounded">pending</span></td>
+                <td class="px-4 py-2.5 text-fg-secondary">เมื่อวาน</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

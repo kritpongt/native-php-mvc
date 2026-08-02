@@ -1,0 +1,6 @@
+{% if name is defined and name %}
+    {# Twig escapes {{ name }} automatically - no manual htmlspecialchars ever again #}
+    <p>Hello, {{ name }}!</p>
+{% else %}
+    <p>No greeting yet.</p>
+{% endif %}

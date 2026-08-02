@@ -1,0 +1,17 @@
+# dependencies - rebuilt by composer install / npm ci
+/vendor/
+/node_modules/
+
+# secret - NEVER commit (.env example is the committed template)
+/.env
+
+# app writable root - ignore contents, keep folder skeleton via .gitkeep
+storage/**
+!storage/**/
+!storage/**/.gitkeep
+
+# tool caches
+.phpunit.result.cache
+
+architecture.md
+CLAUDE.md

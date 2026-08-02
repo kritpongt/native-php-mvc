@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale }}"{% if theme %} data-theme="{{ theme }}"{% endif %}>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{# tells the browser both themes exist -> native form controls match #}
+	<meta name="color-scheme" content="light dark">
+	{# stop htmx from injecting inline styles - CSP forbids inline #}
+	<meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+	{# htmx reads this meta via hx-headers below - token rides on every ajax call #}
+	<meta name="csrf-token" content="{{ csrf_token }}">
+	<title>{% block title %}native-php-mvc{% endblock %}</title>
+	<link rel="stylesheet" href="/assets/app-tailwind.css">
+	<link rel="stylesheet" href="/assets/htmx.css">
+</head>
+{# hx-headers on <body> = inherited by every htmx element inside #}
+<body class="bg-surface-0 text-fg" hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+	{% block content %}{% endblock %}
+	<script src="/assets/theme.js"></script>
+	<script src="/assets/htmx.min.js"></script>
+</body>
+</html>

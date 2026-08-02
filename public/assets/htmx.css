@@ -1,0 +1,42 @@
+/* ============================================================
+   REQUIRED - htmx injects these unless includeIndicatorStyles=false
+   (we set false for CSP). source: htmx.org/docs -> Request Indicators
+   ============================================================ */
+.htmx-indicator {
+  opacity: 0;
+}
+.htmx-request .htmx-indicator {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+.htmx-request.htmx-indicator {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+/* ============================================================
+   OPTIONAL HOOKS - no default styles exist, style only if wanted
+   the 5 lifecycle classes: htmx.org/reference -> CSS Class Reference
+   ------------------------------------------------------------
+   htmx-request  : on element (or hx-indicator target) while request flies
+   htmx-swapping : on target BEFORE old content is removed
+   htmx-settling : on target AFTER new content lands (default 20ms)
+   htmx-added    : on each NEW node until settle completes
+   ============================================================ */
+
+/* example: fade OUT old content before swap
+   (needs hx-swap="innerHTML swap:200ms" so removal waits for the fade) */
+.htmx-swapping {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+/* example: fade IN new content after swap */
+.htmx-added {
+  opacity: 0;
+}
+.htmx-settling .htmx-added,
+.htmx-added.htmx-settling {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}

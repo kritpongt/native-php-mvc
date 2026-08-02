@@ -1,0 +1,69 @@
+<?php
+declare(strict_types=1);
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+use App\Console\CreateUser;
+use App\Console\SyncRbac;
+use App\Models\PermissionRepo;
+use App\Models\RoleRepo;
+use App\Models\UserRepo;
+use Core\Config;
+use Core\Database;
+use Core\Env;
+use Core\Migrator;
+use Core\Console\MigrationMaker;
+
+$root = dirname(__DIR__);
+
+Env::load($root.'/.env');
+
+$config = new Config($root.'/config');
+$tz = (string) $config->get('app.timezone', 'Asia/Bangkok');
+if(!date_default_timezone_set($tz)){
+	throw new RuntimeException("Invalid app.timezone: {$tz}");
+}
+
+$db = new Database($config);
+
+$migrator = new Migrator(
+	$db,
+	$root.'/migrations'
+);
+
+// two commands for now - app/Routes/console.php comes when commands multiply
+switch($argv[1] ?? 'help'){
+	case 'migrate':
+		$applied = $migrator->migrate();
+		echo $applied === [] ? "Nothing to migrate.\n" : 'Migrated: '.implode(', ', $applied)."\n";
+		break;
+
+	case 'migrate:rollback':
+		$rolled = $migrator->rollback();
+		echo $rolled === [] ? "Nothing to roll back.\n" : 'Rolled back: '.implode(', ', $rolled)."\n";
+		break;
+
+	case 'makefile:migration':
+		$name = $argv[2] ?? '';
+
+		if($name === ''){
+			echo "Usage: php bin/console makefile:migration <snake_case_name>\n";
+			exit(1);
+		}
+
+		$maker = new MigrationMaker($root.'/migrations');
+		echo 'Created: migrations/'.basename($maker->make($name))."\n";
+		break;
+
+	case 'user:create':
+		$cmd = new CreateUser(new UserRepo($db), new RoleRepo($db));
+		exit($cmd->run(array_slice($argv, 2)));
+	
+	case 'rbac:sync':
+		$rbac = require $root.'/config/rbac.php';
+		$cmd = new SyncRbac(new RoleRepo($db), new PermissionRepo($db), $rbac);
+		exit($cmd->run());
+
+	default:
+		echo "Usage: php bin/console [migrate|migrate:rollback|makefile:migration <name>|user:create|rbac:sync]\n";
+}

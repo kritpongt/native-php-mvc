@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <h1>Home - Twig works</h1>
+    <p>env: {{ env }}</p>
+
+    {# progressive enhancement: action= for no-JS, hx-post= for htmx #}
+    <form method="post" action="/greet"
+          hx-post="/greet" hx-target="#greeting" hx-swap="innerHTML">
+        {# no-JS path sends the token as a hidden field #}
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <input type="text" name="name" placeholder="your name" required>
+        <button type="submit">Greet</button>
+    </form>
+
+    <div id="greeting">
+        {% include 'partials/greeting.html.twig' %}
+    </div>
+{% endblock %}

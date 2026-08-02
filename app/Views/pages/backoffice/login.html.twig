@@ -1,0 +1,36 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Login - Backoffice{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <form method="post" action="/backoffice/login" class="bg-surface-2 border border-line rounded-xl p-8 w-full max-w-sm">
+        <h1 class="text-lg font-medium mb-6">Backoffice</h1>
+
+        {% if error %}
+            <p class="mb-4 text-sm text-danger-text">{{ error }}</p>
+        {% endif %}
+
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+        <label class="block mb-4">
+            <span class="text-sm text-fg-secondary">Email</span>
+            <input type="email" name="email" value="{{ email }}" required autofocus
+                class="mt-1 w-full bg-surface-0 border border-line rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-accent">
+        </label>
+
+        <label class="block mb-4">
+            <span class="text-sm text-fg-secondary">Password</span>
+            <input type="password" name="password" required
+                class="mt-1 w-full bg-surface-0 border border-line rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-accent">
+        </label>
+
+        <label class="flex items-center gap-2 mb-6">
+            <input type="checkbox" name="remember" value="1">
+            <span class="text-sm text-fg-secondary">จดจำการเข้าสู่ระบบ</span>
+        </label>
+
+        <button type="submit" class="w-full bg-accent hover:bg-accent-hover text-accent-fg rounded-lg py-2 text-sm font-medium">เข้าสู่ระบบ</button>
+    </form>
+</div>
+{% endblock %}
