@@ -13,5 +13,5 @@ storage/**
 # tool caches
 .phpunit.result.cache
 
-architecture.md
-CLAUDE.md
+# architecture.md
+# CLAUDE.md
