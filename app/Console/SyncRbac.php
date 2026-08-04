@@ -52,7 +52,7 @@ final class SyncRbac
 			echo "role: {$roleName} -> ".implode(', ', $wanted)."\n";
 		}
 
-		echo "RBAC sync complete.\n";
+		echo "\nRBAC sync complete.\n";
 
 		return 0;
 	}
