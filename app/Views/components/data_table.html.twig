@@ -1,0 +1,107 @@
+{# components/data_table.html.twig #}
+<div id="data-table-container" class="bg-surface-2 border border-line rounded-xl overflow-hidden">
+	<div class="overflow-x-auto">
+		<table class="w-full text-left text-sm">
+			<thead class="bg-surface-2 border-b border-line text-xs uppercase text-fg-muted font-medium">
+				<tr>
+					{% block headers %}{% endblock %}
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-line"> {% block rows %}{% endblock %}
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Pagination Bar -->
+		{% block pagination %}
+			{% set per_page = perPage|default(15) %}
+			{% set current_page = currentPage|default(1) %}
+			{% set total_items = total|default(items|length) %}
+			{# {% set total_pages = (total_items / per_page)|round(0, 'ceil') %} #}
+			{% set raw_pages = (total_items / per_page)|round(0, 'ceil') %}
+			{% set total_pages = raw_pages > 0 ? raw_pages : 1 %}
+
+			{# {% set from_item = total_items > 0 ? ((current_page -1) * per_page + 1) : 0 %} #}
+			{% set from_item = total_items > 0 ? ((current_page - 1) * per_page + 1) : 0 %}
+			{% set to_item = (current_page * per_page) < total_items ? (current_page * per_page) : total_items %}
+
+			<div class="px-4 py-3 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-fg-muted">
+				<!-- Info -->
+				<div>
+					Showing {{ from_item }}
+					to {{ to_item }}
+					of {{ total_items }} items
+				</div>
+
+				<!-- Navigation Buttons -->
+				<div class="flex items-center gap-1">
+					{# Prev Button #}
+					{% if current_page > 1 %}
+						{# <a href="?page={{ current_page - 1 }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{ isActive|default('')
+							}}" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg" hx-get="?page={{ current_page - 1 }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{
+							isActive|default('') }}" hx-target="#data-table-container" hx-swap="outerHTML">
+							Prev
+						</a> #}
+						<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
+							hx-post="{{ url('/backoffice/users') }}"
+							hx-vals='{"page": {{ current_page - 1 }}'
+							hx-include="#search-filter-form"
+							hx-target="#data-table-container"
+							hx-swap="outerHTML">
+							Prev
+						</button>
+					{% else %}
+						<button class="px-2.5 py-1 border border-line rounded-md opacity-40 cursor-not-allowed" disabled>Prev</button>
+					{% endif %}
+
+					{# Page Numbers with Ellipsis #}
+					{% for p in 1..total_pages %}
+						{% if p == current_page %}
+							<span class="px-2.5 py-1 border border-line rounded-md bg-accent-bg text-accent-text font-medium">{{ p }}</span>
+						{% elseif p == 1 or p == total_pages or (p >= current_page - 1 and p <= current_page + 1) %}
+							{# <a href="?page={{ p }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{ isActive|default('') }}" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg" hx-get="?page={{ p }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{ isActive|default('') }}" hx-target="#data-table-container" hx-swap="outerHTML">
+								{{ p }}
+							</a> #}
+							<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
+								hx-post="{{ url('/backoffice/users') }}"
+								hx-vals='{"page": {{ p }}'
+								hx-include="#search-filter-form"
+								hx-target="#data-table-container"
+								hx-swap="outerHTML">
+                {{ p }}
+							</button>
+						{% elseif p == current_page - 2 or p == current_page + 2 %}
+							<span class="px-1 text-fg-muted">...</span>
+						{% endif %}
+					{% endfor %}
+
+					{# Next Button #}
+					{% if current_page < total_pages %}
+						{# <a href="?page={{ current_page + 1 }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{ isActive|default('')
+							}}" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg" hx-get="?page={{ current_page + 1 }}&q={{ search|default('') }}&role={{ role|default('') }}&is_active={{
+							isActive|default('') }}" hx-target="#data-table-container" hx-swap="outerHTML">
+							Next
+						</a> #}
+						<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
+							hx-post="{{ url('/backoffice/users') }}"
+							hx-vals='{"page": {{ cuurent_page + 1 }}'
+							hx-include="#search-filter-form"
+							hx-target="#data-table-container"
+							hx-swap="outerHTML">
+							{{ p }}
+						</button>
+					{% else %}
+						<button class="px-2.5 py-1 border border-line rounded-md opacity-40 cursor-not-allowed" disabled>Next</button>
+					{% endif %}
+				</div>
+			</div>
+			{# <div class="px-4 py-3 border-t border-line flex items-center justify-between text-xs text-fg-muted">
+				<span>Showing {{ items|length }} items</span>
+				<div class="flex items-center gap-1">
+					<button class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 disabled:opacity-50" disabled>Prev</button>
+					<button class="px-2.5 py-1 border border-line rounded-md bg-accent-bg text-accent-text font-medium">1</button>
+					<button class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1">Next</button>
+				</div>
+			</div> #}
+		{% endblock %}
+	</div>
