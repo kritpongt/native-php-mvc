@@ -11,6 +11,10 @@ final class User
 		public readonly string $email,
 		public readonly string $passwordHash,
 		public readonly string $name,
-		public readonly bool $isActive
+		public readonly bool $is_active,
+		public readonly string $created_at = '',
+		/** add-on */
+		public readonly ?array $roles = null,
+		public readonly ?string $role_names = null
 	){}
 }

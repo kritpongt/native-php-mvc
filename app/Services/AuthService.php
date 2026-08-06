@@ -71,7 +71,7 @@ final class AuthService
 
 		$user = $this->users->findById($id);
 
-		if($user === null || !$user->isActive){ return null; }
+		if($user === null || !$user->is_active){ return null; }
 
 		return $this->user = $user;
 	}

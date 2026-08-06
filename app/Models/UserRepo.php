@@ -9,6 +9,13 @@ class UserRepo
 {
 	public function __construct(private readonly Database $db){}
 
+	public function findAll(): array
+	{
+		$rows = $this->db->select('SELECT * FROM users ORDER BY id DESC');
+
+		return array_map(fn(array $row) => $this->map($row), $rows);
+	}
+
 	public function findByEmail(string $email): ?User
 	{
 		$row = $this->db->selectOne(
@@ -51,8 +58,79 @@ class UserRepo
 			email: $email,
 			passwordHash: $passwordHash,
 			name: $name,
-			isActive: true
+			is_active: true,
 		);
+	}
+
+	public function paginate(array $filters = [], int $page = 1, int $perPage = 15): array
+	{
+		$search = (string) ($filters['search'] ?? '');
+		$role = (string) ($filters['role'] ?? '');
+		$isActive = (string) ($filters['isActive'] ?? '');
+
+		$where = [];
+		$params = [];
+
+		if($search !== ''){
+			$where[] = '(name LIKE :search OR email LIKE :search)';
+			$params['search'] = "%{$search}%";
+		}
+		if($isActive === 'active'){
+			$where[] = 'u.is_active = true';
+		}else if($isActive === 'inactive'){
+			$where[] = 'u.is_active = false';
+		}
+
+		$joinSql = '';
+		if($role !== ''){
+			$joinSql = ' INNER JOIN user_roles ur ON ur.user_id = u.id INNER JOIN roles r ON r.id = ur.role_id ';
+			$where[] = 'r.name = :role';
+			$params['role'] = $role;
+		}
+
+		$sqlWhere = $where ? ' WHERE '.implode(' AND ', $where): '';
+
+		$total = (int) ($this->db->selectOne("SELECT COUNT(DISTINCT u.id) as aggregate FROM users u {$joinSql} {$sqlWhere}", $params))['aggregate'] ?? 0;
+
+		$offset = ($page - 1) * $perPage;
+		$params['limit'] = $perPage;
+		$params['offset'] = $offset;
+
+		$rows = $this->db->select("SELECT DISTINCT u.id, u.email, u.password_hash, u.name, u.is_active, u.created_at
+			FROM users u {$joinSql} {$sqlWhere}
+			ORDER BY u.id DESC
+			LIMIT :limit OFFSET :offset", $params
+		);
+
+		if(empty($rows)){
+			return ['items' => [], 'total' => $total];
+		}
+
+		$userIds = array_column($rows, 'id');
+		$placeholders = implode(',', array_fill(0, count($userIds), '?')); // [?, ?, ?]
+
+		$roleRows = $this->db->select("SELECT ur.user_id, r.name as role_name 
+			FROM user_roles ur 
+			INNER JOIN roles r ON r.id = ur.role_id 
+			WHERE ur.user_id IN ({$placeholders})",
+			$userIds
+    );
+
+		$rolesByUserId = [];
+    foreach ($roleRows as $rRow) {
+			$rolesByUserId[$rRow['user_id']][] = $rRow['role_name'];
+    }
+
+		$items = array_map(function(array $row) use ($rolesByUserId){
+			$row['roles'] = $rolesByUserId[$row['id']] ?? [];
+			$row['role_names'] = implode(', ', $row['roles']);
+			return $this->map($row);
+		}, $rows);
+
+		return [
+			'items' => $items,
+			'total'	=> $total
+		];
 	}
 
 	/** @param array<string, mixed> $row */
@@ -64,7 +142,10 @@ class UserRepo
 			passwordHash: (string) $row['password_hash'],
 			name: (string) $row['name'],
 			// mysql returns int, pgsql returns bool - cast unifies both
-			isActive: (bool) $row['is_active']
+			is_active: (bool) $row['is_active'],
+			created_at: $row['created_at'] ?? '',
+			roles: $row['roles'] ?? null,
+			role_names: $row['role_names'] ?? null
 		);
 	}
 }

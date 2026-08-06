@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Controllers\Backoffice\AuthController;
 use App\Controllers\Backoffice\DashboardController;
+use App\Controllers\Backoffice\UserController;
 use App\Middlewares\Auth;
 use App\Middlewares\Guest;
 use Core\Router;
@@ -18,6 +19,8 @@ return static function(Router $router): void{
 	// authenticated zone - every route in this block is protected by construction
 	$router->group('/backoffice', [Auth::class], static function(Router $r): void{
 		$r->get('', [DashboardController::class, 'index']);
+		$r->get('/users', [UserController::class, 'index']);
+		$r->post('/users', [UserController::class, 'index']);
 		$r->post('/logout', [AuthController::class, 'destroy']);
 	});
 };
