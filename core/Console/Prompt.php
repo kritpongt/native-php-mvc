@@ -31,7 +31,7 @@ final class Prompt
 				.'[Runtime.InteropServices.Marshal]::SecureStringToBSTR($p))"';
 		
 			$value = shell_exec($cmd);
-			// echo PHP_EOL;
+			echo PHP_EOL;
 
 			return $value === null ? '' : trim($value);
 		}
@@ -43,7 +43,7 @@ final class Prompt
 		$line = fgets(STDIN);
 
 		shell_exec('stty '.$before);
-		// echo PHP_EOL;
+		echo PHP_EOL;
 
 		return $line === false ? '' : trim($line);
 	}
