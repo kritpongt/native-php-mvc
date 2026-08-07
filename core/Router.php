@@ -15,8 +15,8 @@ final class Router
 	private array $routes = [];
 
 	/**
-	 * Active group() nesting. Every route declared inside inherits
-	 * each entry's prefix and middleware.
+	 * Every route declared inside inherits each entry's prefix and middleware.
+	 * 	groupStack[] = ['prefix' => path, 'middleware' => middleware]
 	 * 
 	 * @var list<array{prefix: string, middleware: list<class-string|MiddlewareDef>}>
 	 */
