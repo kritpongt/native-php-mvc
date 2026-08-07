@@ -139,7 +139,7 @@ final class AuthService
 
 		$user = $this->users->findById($token->userId);
 
-		if($user === null || !$user->isActive){
+		if($user === null || !$user->is_active){
 			$this->tokens->deleteForUser($token->userId);
 			return null;
 		}
