@@ -1,12 +1,11 @@
 {# components/search_filter.html.twig #}
 <div class="p-3 bg-surface-2 border border-line rounded-xl">
-	<form id="search-filter-form" method="post"
+	<form id="search-filter-form" method="get"
 		action="{{ action|default(url('/backoffice/users')) }}"
-		hx-post="{{ action|default(url('/backoffice/users')) }}"
+		hx-get="{{ action|default(url('/backoffice/users')) }}"
 		hx-target="#data-table-container"
 		hx-select="#data-table-container"
 		hx-swap="outerHTML"
-		hx-push-url="true"
 		hx-trigger="submit, change from:select"
 		class="flex flex-col sm:flex-row gap-3 justify-between items-center w-full">
 		

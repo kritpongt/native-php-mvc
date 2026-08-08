@@ -43,8 +43,8 @@
 							Prev
 						</a> #}
 						<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
-							hx-post="{{ url('/backoffice/users') }}"
-							hx-vals='{"page": {{ current_page - 1 }}'
+							hx-get="{{ url('/backoffice/users') }}"
+							hx-vals='{"page": {{ current_page - 1 }}}'
 							hx-include="#search-filter-form"
 							hx-target="#data-table-container"
 							hx-swap="outerHTML">
@@ -63,8 +63,8 @@
 								{{ p }}
 							</a> #}
 							<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
-								hx-post="{{ url('/backoffice/users') }}"
-								hx-vals='{"page": {{ p }}'
+								hx-get="{{ url('/backoffice/users') }}"
+								hx-vals='{"page": {{ p }}}'
 								hx-include="#search-filter-form"
 								hx-target="#data-table-container"
 								hx-swap="outerHTML">
@@ -83,12 +83,12 @@
 							Next
 						</a> #}
 						<button type="button" class="px-2.5 py-1 border border-line rounded-md hover:bg-surface-1 transition-colors text-fg"
-							hx-post="{{ url('/backoffice/users') }}"
-							hx-vals='{"page": {{ cuurent_page + 1 }}'
+							hx-get="{{ url('/backoffice/users') }}"
+							hx-vals='{"page": {{ cuurent_page + 1 }}}'
 							hx-include="#search-filter-form"
 							hx-target="#data-table-container"
 							hx-swap="outerHTML">
-							{{ p }}
+							Next
 						</button>
 					{% else %}
 						<button class="px-2.5 py-1 border border-line rounded-md opacity-40 cursor-not-allowed" disabled>Next</button>
