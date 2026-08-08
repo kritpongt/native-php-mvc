@@ -17,113 +17,162 @@
 --------------------------------------------------------------------------- */
 
 :root {
-	--surface-0: #f4f4f1;  /* page background            */
-	--surface-1: #eceae3;  /* inset tile (stat cards)    */
-	--surface-2: #ffffff;  /* raised: cards, sidebar, topbar */
+  --surface-0: #f4f4f1; /* page background            */
+  --surface-1: #eceae3; /* inset tile (stat cards)    */
+  --surface-2: #ffffff; /* raised: cards, sidebar, topbar */
 
-	--fg:           #1c1c1a;  /* primary text    */
-	--fg-secondary: #5f5e5a;  /* supporting text */
-	--fg-muted:     #8a8981;  /* hints, meta     */
+  --fg: #1c1c1a; /* primary text    */
+  --fg-secondary: #5f5e5a; /* supporting text */
+  --fg-muted: #8a8981; /* hints, meta     */
 
-	--line:        #e2e0d8;  /* hairline border  */
-	--line-strong: #cfcdc4;  /* hover / emphasis */
+  --line: #e2e0d8; /* hairline border  */
+  --line-strong: #cfcdc4; /* hover / emphasis */
 
-	--accent:      #185fa5;  /* solid: buttons, active bar */
-	--accent-hover:#0c447c;
-	--accent-fg:   #ffffff;  /* text on solid accent */
-	--accent-bg:   #e6f1fb;  /* tint: active nav, avatar */
-	--accent-text: #185fa5;  /* text/icon on tint    */
+  --accent: #185fa5; /* solid: buttons, active bar */
+  --accent-hover: #0c447c;
+  --accent-fg: #ffffff; /* text on solid accent */
+  --accent-bg: #e6f1fb; /* tint: active nav, avatar */
+  --accent-text: #185fa5; /* text/icon on tint    */
 
-	--success-bg: #e1f5ee;  --success-text: #0f6e56;
-	--warning-bg: #faeeda;  --warning-text: #854f0b;
-	--danger-bg:  #fcebeb;  --danger-text:  #a32d2d;
+  --success-bg: #e1f5ee;
+  --success-text: #0f6e56;
+  --warning-bg: #faeeda;
+  --warning-text: #854f0b;
+  --danger-bg: #fcebeb;
+  --danger-text: #a32d2d;
 }
 
 /* dark values live in one place, reused by the media query and the explicit
    opt-in - :not([data-theme=light]) lets an explicit light cookie win over OS */
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme='light']) {
-		--surface-0: #141414;
-		--surface-1: #1e1e1e;
-		--surface-2: #242424;
+  :root:not([data-theme='light']) {
+    --surface-0: #141414;
+    --surface-1: #1e1e1e;
+    --surface-2: #242424;
 
-		--fg:           #ececea;
-		--fg-secondary: #a8a7a1;
-		--fg-muted:     #77766f;
+    --fg: #ececea;
+    --fg-secondary: #a8a7a1;
+    --fg-muted: #77766f;
 
-		--line:        #2e2e2b;
-		--line-strong: #3d3d39;
+    --line: #2e2e2b;
+    --line-strong: #3d3d39;
 
-		--accent:      #2f7fd0;
-		--accent-hover:#3d8fe0;
-		--accent-fg:   #ffffff;
-		--accent-bg:   #12233a;
-		--accent-text: #85b7eb;
+    --accent: #2f7fd0;
+    --accent-hover: #3d8fe0;
+    --accent-fg: #ffffff;
+    --accent-bg: #12233a;
+    --accent-text: #85b7eb;
 
-		--success-bg: #0f2f27;  --success-text: #5dcaa5;
-		--warning-bg: #33240a;  --warning-text: #efb050;
-		--danger-bg:  #331414;  --danger-text:  #f09595;
-	}
+    --success-bg: #0f2f27;
+    --success-text: #5dcaa5;
+    --warning-bg: #33240a;
+    --warning-text: #efb050;
+    --danger-bg: #331414;
+    --danger-text: #f09595;
+  }
 }
 
 :root[data-theme='dark'] {
-	--surface-0: #141414;
-	--surface-1: #1e1e1e;
-	--surface-2: #242424;
+  --surface-0: #141414;
+  --surface-1: #1e1e1e;
+  --surface-2: #242424;
 
-	--fg:           #ececea;
-	--fg-secondary: #a8a7a1;
-	--fg-muted:     #77766f;
+  --fg: #ececea;
+  --fg-secondary: #a8a7a1;
+  --fg-muted: #77766f;
 
-	--line:        #2e2e2b;
-	--line-strong: #3d3d39;
+  --line: #2e2e2b;
+  --line-strong: #3d3d39;
 
-	--accent:      #2f7fd0;
-	--accent-hover:#3d8fe0;
-	--accent-fg:   #ffffff;
-	--accent-bg:   #12233a;
-	--accent-text: #85b7eb;
+  --accent: #2f7fd0;
+  --accent-hover: #3d8fe0;
+  --accent-fg: #ffffff;
+  --accent-bg: #12233a;
+  --accent-text: #85b7eb;
 
-	--success-bg: #0f2f27;  --success-text: #5dcaa5;
-	--warning-bg: #33240a;  --warning-text: #efb050;
-	--danger-bg:  #331414;  --danger-text:  #f09595;
+  --success-bg: #0f2f27;
+  --success-text: #5dcaa5;
+  --warning-bg: #33240a;
+  --warning-text: #efb050;
+  --danger-bg: #331414;
+  --danger-text: #f09595;
 }
 
 /* `inline` = utilities reference the var by name (var(--surface-2)) instead of
    inlining the literal - that indirection is exactly what makes them theme-aware */
 @theme inline {
-	--color-surface-0: var(--surface-0);
-	--color-surface-1: var(--surface-1);
-	--color-surface-2: var(--surface-2);
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
 
-	--color-fg:           var(--fg);
-	--color-fg-secondary: var(--fg-secondary);
-	--color-fg-muted:     var(--fg-muted);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
 
-	--color-line:        var(--line);
-	--color-line-strong: var(--line-strong);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
 
-	--color-accent:       var(--accent);
-	--color-accent-hover: var(--accent-hover);
-	--color-accent-fg:    var(--accent-fg);
-	--color-accent-bg:    var(--accent-bg);
-	--color-accent-text:  var(--accent-text);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-text: var(--accent-text);
 
-	--color-success-bg:   var(--success-bg);
-	--color-success-text: var(--success-text);
-	--color-warning-bg:   var(--warning-bg);
-	--color-warning-text: var(--warning-text);
-	--color-danger-bg:    var(--danger-bg);
-	--color-danger-text:  var(--danger-text);
+  --color-success-bg: var(--success-bg);
+  --color-success-text: var(--success-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-text: var(--warning-text);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-text: var(--danger-text);
 }
 
 /* theme toggle icon visibility - lives here (not inline) because a strict CSP
    forbids <style> blocks. Works with zero JS: pure CSS off the theme selector */
-.icon-when-dark  { display: none; }
-.icon-when-light { display: inline-flex; }
-[data-theme='dark'] .icon-when-dark  { display: inline-flex; }
-[data-theme='dark'] .icon-when-light { display: none; }
+.icon-when-dark {
+  display: none;
+}
+.icon-when-light {
+  display: inline-flex;
+}
+[data-theme='dark'] .icon-when-dark {
+  display: inline-flex;
+}
+[data-theme='dark'] .icon-when-light {
+  display: none;
+}
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme='light']) .icon-when-dark  { display: inline-flex; }
-	:root:not([data-theme='light']) .icon-when-light { display: none; }
+  :root:not([data-theme='light']) .icon-when-dark {
+    display: inline-flex;
+  }
+  :root:not([data-theme='light']) .icon-when-light {
+    display: none;
+  }
+}
+
+/* components/noti.html.twig */
+.noti-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.5;
+  transform-origin: left;
+  animation-name: noti-timer;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes noti-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .noti-timer {
+    display: none;
+  }
 }

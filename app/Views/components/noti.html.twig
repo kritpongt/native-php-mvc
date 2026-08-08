@@ -1,0 +1,82 @@
+{# 
+  Parameters:
+  - message: (String / Required)
+  - details: (String or Array/List / Optional)
+  - icon_name: (Default: 'info')
+  - type: 'success' | 'error' | 'info' (Default: 'info')
+	- position: 'left' | 'center' | 'right' (Default: 'center')
+  - dismissible: close btn (Boolean / Default: true)
+  - autoclose: (Int / Optional)
+#}
+
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% set dismissible = dismissible is defined ? dismissible : true %}
+{% set autoclose = autoclose is defined ? autoclose : 8000 %}
+{% set type = type|default('info') %}
+
+{% if type not in ['success', 'error', 'info'] %}
+	{% set type = 'info' %}
+{% endif %}
+
+{% set icon_config = {
+	'success': { 'icon': 'check-circle', 'color': 'text-emerald-500' },
+	'error': { 'icon': 'error', 'color': 'text-danger-text' },
+	'info': { 'icon': 'info', 'color': 'text-fg-secondary' }
+} %}
+
+{% set current_icon = icon_name is defined and icon_name is not empty ? icon_name : icon_config[type].icon %}
+{% set icon_color = icon_config[type].color %}
+
+{% set position = position|default('center') %}
+{% if position not in ['left', 'center', 'right'] %}
+	{% set position = 'center' %}
+{% endif %}
+{% set position_class = position == 'left' ? 'left-[244px]'
+	: (position == 'right' ? 'right-4'
+	: 'left-[calc(50vw+110px)] -translate-x-1/2') %}
+
+{# {% set is_array = details is defined and details is iterable %}
+{% set is_multiline = is_array or (details is defined and details is not empty) %} #}
+{% set has_details = details is defined and details is not empty %}
+{% set is_array = has_details and details is iterable %}
+{% set is_multiline = has_details %}
+
+
+<div data-noti class="fixed top-15 z-30 flex w-max max-w-sm p-3 rounded-xl border border-line bg-surface-2 text-fg shadow-sm gap-2.5 overflow-hidden
+	{{ position_class }}
+	{{ is_multiline ? 'items-stretch' : 'items-center' }}"
+	{% if autoclose > 0 %} data-autoclose="{{ autoclose }}" {% endif %}
+	role="noti">
+	<div class="flex items-center shrink-0 ms-1">
+		{{ icon.use(current_icon, 'w-4 h-4 ' ~ icon_color) }}
+	</div>
+
+	<div class="flex-1 min-w-0 border-s border-line ps-3 text-sm text-fg-secondary {{ is_multiline ? 'space-y-1' : '' }}">
+		<p class="{{ is_multiline ? 'font-medium text-fg leading-snug' : 'leading-none' }}">
+			{{ t(message) }}
+		</p>
+		{% if is_array %}
+			<ul class="list-disc list-inside text-xs leading-relaxed">
+				{% for item in details %}
+					<li>{{ t(item) }}</li>
+				{% endfor %}
+			</ul>
+		{% elseif has_details %}
+			<p class="text-xs text-fg-secondary/80 leading-normal">
+				{{ t(details) }}
+			</p>
+		{% endif %}
+	</div>
+
+	{% if dismissible %}
+		<button type="button" data-noti-close class="shrink-0 flex items-center justify-center w-7 h-7 {{ is_multiline ? '-me-1 -mt-1' : '' }} rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-1 transition-colors focus:outline-none" aria-label="Close">
+			<span class="sr-only">Close</span>
+			{{ icon.use('close', 'w-3.5 h-3.5') }}
+		</button>
+	{% endif %}
+
+	{% if autoclose > 0 %}
+		<span class="noti-timer" aria-hidden="true"></span>
+	{% endif %}
+</div>
