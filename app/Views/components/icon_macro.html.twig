@@ -1,0 +1,6 @@
+{# templates/components/icon_macro.html.twig #}
+{% macro use(name, class = 'w-4 h-4') %}
+	<svg class="{{ class }}" aria-hidden="true">
+		<use href="#icon-{{ name }}"></use>
+	</svg>
+{% endmacro %}
