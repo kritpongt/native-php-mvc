@@ -15,7 +15,9 @@
 </head>
 {# hx-headers on <body> = inherited by every htmx element inside #}
 <body class="bg-surface-0 text-fg" hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+	{% include 'components/icons.html.twig' %}
 	{% block content %}{% endblock %}
+	<script src="/assets/main.js"></script>
 	<script src="/assets/theme.js"></script>
 	<script src="/assets/htmx.min.js"></script>
 </body>
