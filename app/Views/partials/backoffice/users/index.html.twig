@@ -1,4 +1,12 @@
 {% block main %}
+	{% if success %}
+		{% include 'components/noti.html.twig' with {
+			message: success,
+			type: 'success',
+			autoclose: 5000
+		} %}
+	{% endif %}
+
 	<div class="space-y-6">
 		<!-- Page Title & Actions -->
 		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -6,7 +14,11 @@
 				<h1 class="text-xl font-semibold text-fg">{{ t('backoffice.users.title') }}</h1>
 				<p class="text-sm text-fg-secondary">{{ t('backoffice.users.subtitle') }}</p>
 			</div>
-			<a href="{{ url('/backoffice/users/create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-fg hover:opacity-90 transition-opacity">
+			<a href="{{ url('/backoffice/users/create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-fg hover:opacity-90 transition-opacity"
+				hx-get="{{ url('/backoffice/users/create') }}"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-push-url="true">
 				<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
 				{{ t('backoffice.users.add_new') }}
 			</a>
