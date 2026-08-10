@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@import './components/_index.css';
+
 /* scan ONLY the twig templates - path is relative to this file.
    without this, v4 heuristic-scans the whole repo */
 @source "../../app/Views";
@@ -145,34 +147,6 @@
     display: inline-flex;
   }
   :root:not([data-theme='light']) .icon-when-light {
-    display: none;
-  }
-}
-
-/* components/noti.html.twig */
-.noti-timer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--accent);
-  opacity: 0.5;
-  transform-origin: left;
-  animation-name: noti-timer;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-@keyframes noti-timer {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .noti-timer {
     display: none;
   }
 }

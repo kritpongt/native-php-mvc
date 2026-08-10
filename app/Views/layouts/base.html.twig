@@ -10,7 +10,7 @@
 	{# htmx reads this meta via hx-headers below - token rides on every ajax call #}
 	<meta name="csrf-token" content="{{ csrf_token }}">
 	<title>{% block title %}native-php-mvc{% endblock %}</title>
-	<link rel="stylesheet" href="/assets/app-tailwind.css">
+	<link rel="stylesheet" href="/assets/tailwind.css">
 	<link rel="stylesheet" href="/assets/htmx.css">
 </head>
 {# hx-headers on <body> = inherited by every htmx element inside #}
@@ -20,5 +20,6 @@
 	<script src="/assets/main.js"></script>
 	<script src="/assets/theme.js"></script>
 	<script src="/assets/htmx.min.js"></script>
+	<script type="module" src="/assets/app.js"></script>
 </body>
 </html>
