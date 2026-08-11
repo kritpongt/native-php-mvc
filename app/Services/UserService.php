@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Models\RoleRepo;
 use App\Models\UserRepo;
+use InvalidArgumentException;
 
 final class UserService
 {
@@ -36,5 +37,14 @@ final class UserService
 		}
 
 		return $user;
+	}
+
+	public function delete(int $id, int $actingUserId): void
+	{
+		if($id === $actingUserId){
+			throw new InvalidArgumentException('cannot delete your own account');
+		}
+
+		$this->users->delete($id);
 	}
 }

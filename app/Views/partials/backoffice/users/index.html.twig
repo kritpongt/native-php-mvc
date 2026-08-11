@@ -1,9 +1,11 @@
 {% block main %}
-	{% if success %}
+	{% set noti_type = success ? 'success' : (error ? 'error' : null) %}
+	{% set noti_message = success ?: error %}
+
+	{% if noti_type %}
 		{% include 'components/noti.html.twig' with {
-			message: success,
-			type: 'success',
-			autoclose: 5000
+				message: noti_message,
+				type: noti_type,
 		} %}
 	{% endif %}
 
@@ -104,6 +106,8 @@
 									{{ icon.use('edit') }}
 								</a>
 								<form method="post" action="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}" class="m-0 inline"
+									hx-post="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}"
+									hx-target="#main-content"
 									data-dialog-confirm="{{ t('backoffice.users.confirm_delete') }}">
 									<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 									<button type="submit" class="p-1.5 text-danger-text hover:bg-surface-1 rounded-lg transition-colors" title="Delete">

@@ -11,6 +11,7 @@ use Core\Request;
 use Core\Response;
 use Core\SessionInterface;
 use Core\View;
+use InvalidArgumentException;
 
 final class UserController
 {
@@ -41,6 +42,7 @@ final class UserController
 			'role' => $filters['role'],
 			'isActive' => $filters['isActive'],
 			'success' => $this->session->getFlash('users_success'),
+			'error' => $this->session->getFlash('users_error'),
 			'user' => $this->auth->user()
 		];
 
@@ -111,7 +113,7 @@ final class UserController
 
 		// return Response::redirect('/bakcoffice/users');
 		return $request->isHtmx()
-			? (new Response('', 204))->withHeader('HX-Redirect', '/backoffice/users')
+			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/users", "target": "#main-content"}')
 			: Response::redirect('/backoffice/users');
 	}
 
@@ -122,7 +124,53 @@ final class UserController
 		
 		// return Response::redirect('/bakcoffice/users/create');
 		return $request->isHtmx()
-			? (new Response('', 204))->withHeader('HX-Redirect', '/backoffice/users/create')
+			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/users/create", "target": "#main-content"}')
 			: Response::redirect('/backoffice/users/create');
+	}
+
+	public function destroy(Request $request, string $id): Response
+	{
+		$currentUser = $this->auth->user();
+
+    // Auth middleware should have caught this - belt and suspenders
+    if($currentUser === null){
+			return $this->redirectToUsers($request);
+    }
+
+		// URL params arrive as strings - reject junk before casting
+    $id = ctype_digit($id) ? (int) $id : 0;
+
+    if($id === 0 || $this->userRepo->findById($id) === null){
+			$this->session->flash('users_error', 'backoffice.users.error_not_found');
+
+			return $this->redirectToUsers($request);
+    }
+
+    try{
+			$this->user->delete($id, $currentUser->id);
+    }catch(InvalidArgumentException){
+			$this->session->flash('users_error', 'backoffice.users.error_cannot_delete_self');
+
+			return $this->redirectToUsers($request);
+    }
+
+    $this->session->flash('users_success', 'backoffice.users.success_deleted');
+
+    return $this->redirectToUsers($request);
+	}
+
+	/** POST feedback - Post/Redirect/Get */
+	private function redirectToUsers(Request $request): Response
+	{
+		$location['path'] = '/backoffice/users';
+		if ($targetId = $request->header('HX-Target')) {
+			$location['target'] = '#'.$targetId;
+		}
+
+		$hxLocation = json_encode($location, JSON_UNESCAPED_SLASHES);
+
+		return $request->isHtmx()
+			? (new Response('', 204))->withHeader('HX-Location', $hxLocation)
+			: Response::redirect('/backoffice/users');
 	}
 }
