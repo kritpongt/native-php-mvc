@@ -1,5 +1,7 @@
 {% extends 'layouts/base.html.twig' %}
 
+{% import "components/icon_macro.html.twig" as icon %}
+
 {% block content %}
 	{% set active = block('nav_active') %}
 	{% set nav = [
@@ -9,22 +11,11 @@
 		{ key: 'audit', label: t('backoffice.nav.audit'), href: url('/backoffice/audit') },
 		{ key: 'settings', label: t('backoffice.nav.settings'), href: url('/backoffice/settings') },
 	] %}
-	{# raw: static system-defined SVG constants, never user data - autoescape-safe #}
-	{% set icon = {
-		brand: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg>',
-		dashboard: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
-		users: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6a3 3 0 0 1 0 6"/><path d="M20 20a6 6 0 0 0-3-5"/></svg>',
-		rbac: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg>',
-		audit: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></svg>',
-		settings: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>',
-		sun: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4"/></svg>',
-		moon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10z"/></svg>'
-	} %}
-	<div class="min-h-screen grid grid-cols-[220px_1fr]">
 
-		<aside class="bg-surface-2 border-r border-line flex flex-col">
+	<div class="min-h-screen flex flex-col pb-16 md:pb-0 md:grid md:grid-cols-[clamp(16vw,240px,40vw)_1fr]">
+		<aside class="hidden md:flex bg-surface-2 border-r border-line flex-col">
 			<a href="{{ url('/backoffice') }}" class="flex items-center gap-2 px-4 h-14 border-b border-line">
-				<span class="w-7 h-7 rounded-lg bg-accent text-accent-fg grid place-items-center">{{ icon.brand|raw }}</span>
+				<span class="w-7 h-7 rounded-lg bg-accent text-accent-fg grid place-items-center">{{ icon.use('brand')|raw }}</span>
 				<span class="font-medium text-sm">{{ t('backoffice.brand') }}</span>
 			</a>
 			<nav id="sidemenu-nav" class="p-3 flex flex-col gap-1"
@@ -33,21 +24,14 @@
 				hx-push-url="true">
 				{% for item in nav %}
 					<a href="{{ item.href }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ item.key == active ? 'bg-accent-bg text-accent-text font-medium' : 'text-fg-secondary hover:bg-surface-1' }}">
-						<span class="shrink-0">{{ icon[item.key]|raw }}</span>
+						<span class="shrink-0">{{ icon.use(item.key, 'w-4 h-4')|raw }}</span>
 						{{ item.label }}
 					</a>
-					{# <a id="nav-link" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ item.key == active ? 'bg-accent-bg text-accent-text font-medium' : 'text-fg-secondary hover:bg-surface-1' }}"
-						href="{{ item.href }}"
-						hx-get="{{ item.href }}">
-						<span class="shrink-0">{{ icon[item.key]|raw }}</span>
-						{{ item.label }}
-					</a> #}
 				{% endfor %}
 			</nav>
 
 			<!-- User Profile -->
 			<div class="mt-auto p-3 border-t border-line relative" id="userMenuContainer">
-				<!-- User Trigger Button -->
 				<button type="button" id="userMenuBtn" class="flex items-center justify-between w-full p-2 rounded-lg hover:bg-surface-1 transition-colors">
 					<div class="flex items-center gap-2.5 min-w-0">
 						<span class="w-8 h-8 rounded-full bg-accent-bg text-accent-text grid place-items-center text-xs font-medium shrink-0">
@@ -63,7 +47,8 @@
 				<!-- Dropdown Flyout Menu -->
 				<div id="userDropdown" class="hidden absolute bottom-2 left-full ml-2 w-48 bg-surface-2 border border-line rounded-xl shadow-lg p-1.5 space-y-1 z-50">
 					<a href="{{ url('/backoffice/profile') }}" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-fg-secondary hover:bg-surface-1 hover:text-fg transition-colors">
-						<svg class="w-4 h-4" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+						{# <svg class="w-4 h-4" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> #}
+						{{ icon.use('profile', 'w-4 h-4') }}
 						{{ t('backoffice.edit_profile') }}
 					</a>
 
@@ -72,7 +57,7 @@
 					<form method="post" action="{{ url('/backoffice/logout') }}" class="m-0">
 						<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 						<button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-danger-text hover:bg-surface-1 transition-colors">
-							<svg class="w-4 h-4" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+							{{ icon.use('logout', 'w-4 h-4') }}
 							{{ t('backoffice.logout') }}
 						</button>
 					</form>
@@ -86,10 +71,9 @@
 				<div class="flex items-center gap-3">
 					{# no-JS: this button is inert, page still follows the OS theme #}
 					<button type="button" data-theme-toggle aria-label="toggle_themes" class="w-8 h-8 grid place-items-center rounded-lg text-fg-secondary hover:bg-surface-1">
-						<span class="icon-when-light">{{ icon.sun|raw }}</span>
-						<span class="icon-when-dark">{{ icon.moon|raw }}</span>
+						<span class="icon-when-light">{{ icon.use('sun')|raw }}</span>
+						<span class="icon-when-dark">{{ icon.use('moon')|raw }}</span>
 					</button>
-
 					<div class="w-px h-4 bg-line shrink-0"></div>
 
 					{# language switcher: same page, other locale #}
@@ -115,5 +99,59 @@
 				{% block main %}{% endblock %}
 			</main>
 		</div>
+
+		{# bottom navigation (mobile) #}
+		<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-2 border-t border-line flex items-center justify-around z-40 px-2 pb-safe">
+			{% for item in nav|slice(0, 4) %}
+				<a href="{{ item.href }}" class="flex flex-col items-center justify-center w-full h-full text-[10px] gap-1 {{ item.key == active ? 'text-accent-text' : 'text-fg-secondary' }}">
+					<span>{{ icon.use(item.key)|raw }}</span>
+					<span class="truncate max-w-full">{{ item.label }}</span>
+				</a>
+			{% endfor %}
+
+			{# hamburger menu #}
+			<button type="button" id="open-mobile-menu" class="flex flex-col items-center justify-center w-full h-full text-[10px] gap-1 text-fg-secondary hover:bg-surface-1 rounded-lg">
+				{{ icon.use('menu') }}
+				<span>Menu</span>
+			</button>
+		</nav>
+
+		{# sidemenu (mobile) #}
+		<div id="mobile-menu-drawer" class="md:hidden fixed inset-x-0 top-0 bottom-16 z-30 hidden flex justify-end">
+			<div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/20"></div>
+			<div class="relative w-64 max-w-[80vw] bg-surface-2 h-full shadow-2xl flex flex-col border-l border-line transform transition-transform">
+				<div class="flex items-center justify-between p-4 border-b border-line">
+					<span class="font-medium text-sm">{{ t('backoffice.menu')|default('Menu') }}</span>
+					<button type="button" id="close-mobile-menu" class="p-2 text-fg-secondary hover:bg-surface-1 rounded-lg">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+						</svg>
+					</button>
+				</div>
+
+				<nav class="flex-1 p-3 overflow-y-auto flex flex-col gap-1">
+					{% for item in nav|slice(4) %}
+						<a href="{{ item.href }}" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm {{ item.key == active ? 'bg-accent-bg text-accent-text font-medium' : 'text-fg-secondary hover:bg-surface-1' }}">
+							<span class="shrink-0">{{ icon.use(item.key)|raw }}</span>
+							{{ item.label }}
+						</a>
+					{% endfor %}
+					<div class="border-t border-line my-2"></div>
+
+					<a href="{{ url('/backoffice/profile') }}" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-fg-secondary hover:bg-surface-1">
+						{{ icon.use('profile') }}
+						{{ t('backoffice.edit_profile') }}
+					</a>
+					<form method="post" action="{{ url('/backoffice/logout') }}" class="m-0">
+						<input type="hidden" name="_csrf" value="{{ csrf_token }}">
+						<button type="submit" class="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg text-danger-text hover:bg-surface-1 transition-colors">
+							{{ icon.use('logout') }}
+							{{ t('backoffice.logout') }}
+						</button>
+					</form>
+				</nav>
+			</div>
+		</div>
 	</div>
+	{% include 'components/dialog_box.html.twig' %}
 {% endblock %}

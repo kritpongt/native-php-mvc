@@ -1,14 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ## Layouts
+  mobileMenu()
   userMenuBtn()
   // ## End
 })
 
-document.addEventListener('htmx:afterSettle', () => {
-  // ## Layouts
-  // updateActiveSidemenu()
-  // ## End
-})
+document.addEventListener('htmx:afterSettle', () => {})
 
 function userMenuBtn() {
   const btn = document.getElementById('userMenuBtn')
@@ -27,45 +24,27 @@ function userMenuBtn() {
   })
 }
 
-// function updateActiveSidemenu() {
-//   const currentPath = window.location.pathname
-//   const sidemenuNav = document.getElementById('sidemenu-nav')
-//   if (!sidemenuNav) return
+function mobileMenu() {
+  const openBtn = document.getElementById('open-mobile-menu')
+  const closeBtn = document.getElementById('close-mobile-menu')
+  const drawer = document.getElementById('mobile-menu-drawer')
+  const backdrop = document.getElementById('mobile-menu-backdrop')
 
-//   const activeClasses = ['bg-accent-bg', 'text-accent-text', 'font-medium']
-//   const inactiveClasses = ['text-fg-secondary', 'hover:bg-surface-1']
+  function toggleMobileMenu() {
+    if (drawer) {
+      drawer.classList.toggle('hidden')
+    }
+  }
 
-//   const currentActive = sidemenuNav.querySelector('.bg-accent-bg')
-//   if (currentActive) {
-//     currentActive.classList.remove(...activeClasses)
-//     currentActive.classList.add(...inactiveClasses)
-//   }
+  if (openBtn) openBtn.addEventListener('click', toggleMobileMenu)
+  if (closeBtn) closeBtn.addEventListener('click', toggleMobileMenu)
+  if (backdrop) backdrop.addEventListener('click', toggleMobileMenu)
 
-//   const newActive = sidemenuNav.querySelector(`a[href="${currentPath}"]`)
-//   if (newActive) {
-//     newActive.classList.add(...activeClasses)
-//     newActive.classList.remove(...inactiveClasses)
-//   }
-// }
-
-// ## Components
-// components/noti.html.twig
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-noti-close]')
-  if (!btn) return
-  btn.closest('[data-noti]')?.remove()
-})
-
-// Auto-dismiss - htmx:load fires on initial load AND after every swap
-document.addEventListener('htmx:load', (e) => {
-  const scope = e.detail?.elt ?? document
-  scope.querySelectorAll('[data-autoclose]').forEach((el) => {
-    if (el.dataset.notiScheduled) return
-    el.dataset.notiScheduled = '1'
-    const ms = parseInt(el.dataset.autoclose, 10)
-    if (!(ms > 0)) return
-    el.querySelector('.noti-timer')?.style.setProperty('animation-duration', `${ms}ms`)
-    setTimeout(() => el.remove(), ms)
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      if (drawer && !drawer.classList.contains('hidden')) {
+        drawer.classList.add('hidden')
+      }
+    }
   })
-})
-// ## End
+}
