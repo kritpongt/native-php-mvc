@@ -1,4 +1,5 @@
 let pendingForm = null
+let pendingHtmxEvent = null
 let lastFocused = null
 
 const dialog = document.querySelector('[data-dialog-box]')
@@ -17,9 +18,10 @@ function closeDialog() {
     lastFocused?.focus()
   }
   pendingForm = null
+  pendingHtmxEvent = null
 }
 
-// Intercept submit on any form carrying data-confirm
+// Intercept submit on any form carrying data-confirm (for standard forms)
 document.addEventListener('submit', (e) => {
   const form = e.target.closest('form[data-dialog-confirm]')
   if (!form) return
@@ -34,11 +36,26 @@ document.addEventListener('submit', (e) => {
   openDialog(form)
 })
 
+// Intercept HTMX confirmation
+document.addEventListener('htmx:confirm', (e) => {
+  const form = e.target.closest('form[data-dialog-confirm]')
+  if (!form) return
+
+  e.preventDefault() // Stop HTMX from issuing the request immediately
+  openDialog(form)
+  pendingHtmxEvent = e
+})
+
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-dialog-ok]')) {
-    if (!pendingForm) return
-    pendingForm.dataset.confirmed = '1'
-    pendingForm.requestSubmit() // fires submit again, the flag lets it pass
+    if (pendingHtmxEvent) {
+      pendingHtmxEvent.detail.issueRequest(true) // trigger htmx request
+      closeDialog()
+    } else if (pendingForm) {
+      pendingForm.dataset.confirmed = '1'
+      pendingForm.requestSubmit() // fires submit again, the flag lets it pass
+      closeDialog() // Close dialog since standard submit might take a moment or if it's handled by other scripts
+    }
   } else if (e.target.closest('[data-dialog-cancel]') || e.target.closest('[data-dialog-backdrop]')) {
     closeDialog()
   }
