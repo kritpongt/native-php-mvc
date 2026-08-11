@@ -1,0 +1,29 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+<div data-dialog-box class="hidden fixed inset-0 z-50">
+	<div data-dialog-backdrop class="confirm-backdrop absolute inset-0 bg-black/50"></div>
+
+	<div role="dialog" aria-modal="true" aria-labelledby="dialog-box-title"
+		class="confirm-panel absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,26rem)] rounded-xl border border-line bg-surface-2 shadow-lg p-5 space-y-4">
+		<div class="flex items-start gap-3">
+			<span class="w-9 h-9 shrink-0 grid place-items-center rounded-full bg-danger-bg text-danger-text">
+				{{ icon.use('error', 'w-5 h-5') }}
+			</span>
+			<div class="min-w-0">
+				<h2 id="dialog-box-title" class="text-sm font-semibold text-fg">{{ t('backoffice.common.confirm_title') }}</h2>
+				<p data-dialog-message class="mt-1 text-sm text-fg-secondary"></p>
+			</div>
+		</div>
+
+		<div class="flex items-center justify-end gap-2.5 pt-3 border-t border-line">
+			<button type="button" data-dialog-cancel
+				class="px-4 py-2 text-sm font-medium border border-line rounded-lg text-fg-secondary hover:bg-surface-1 transition-colors">
+				{{ t('backoffice.common.cancel') }}
+			</button>
+			<button type="button" data-dialog-ok
+				class="px-4 py-2 text-sm font-medium rounded-lg bg-danger-text text-white hover:opacity-90 transition-colors">
+				{{ t('backoffice.common.delete') }}
+			</button>
+		</div>
+	</div>
+</div>

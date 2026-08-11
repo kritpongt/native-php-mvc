@@ -51,6 +51,8 @@
 
 		{# Data Table #}
 		{% embed "components/data_table.html.twig" with { items: users } %}
+			{% import "components/icon_macro.html.twig" as icon %}
+
 			{% block headers %}
 				<th class="px-4 py-3">{{ t('backoffice.users.col_user') }}</th>
 				<th class="px-4 py-3">{{ t('backoffice.users.col_role') }}</th>
@@ -85,11 +87,11 @@
 						<td class="px-4 py-3">
 							{% if item.is_active %}
 								<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-									<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+									<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active
 								</span>
 							{% else %}
 								<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-surface-1 text-fg-muted border border-line">
-									<span class="w-1.5 h-1.5 rounded-full bg-fg-muted"></span> Inactive
+									<span class="w-1.5 h-1.5 rounded-full bg-fg-muted"></span>Inactive
 								</span>
 							{% endif %}
 						</td>
@@ -99,12 +101,13 @@
 						<td class="px-4 py-3 text-right">
 							<div class="flex items-center justify-end gap-1">
 								<a href="{{ url('/backoffice/users/' ~ item.id ~ '/edit') }}" class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="Edit">
-									<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+									{{ icon.use('edit') }}
 								</a>
-								<form method="post" action="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}" onsubmit="return confirm('Confirm delete?')" class="m-0 inline">
+								<form method="post" action="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}" class="m-0 inline"
+									data-dialog-confirm="{{ t('backoffice.users.confirm_delete') }}">
 									<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 									<button type="submit" class="p-1.5 text-danger-text hover:bg-surface-1 rounded-lg transition-colors" title="Delete">
-										<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+										{{ icon.use('delete') }}
 									</button>
 								</form>
 							</div>
@@ -112,7 +115,9 @@
 					</tr>
 					{% else %}
 					<tr>
-						<td colspan="5" class="px-4 py-8 text-center text-xs text-fg-muted"> {{ t('backoffice.users.empty') }} </td>
+						<td colspan="5" class="px-4 py-8 text-center text-xs text-fg-muted">
+							{{ t('backoffice.users.empty') }}
+						</td>
 					</tr>
 				{% endfor %}
 			{% endblock %}
