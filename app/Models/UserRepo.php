@@ -36,7 +36,7 @@ class UserRepo
 		return $row === null ? null : $this->map($row);
 	}
 
-	public function create(string $email, string $passwordHash, string $name): User
+	public function create(string $email, string $passwordHash, string $name, bool $isActive = true): User
 	{
 		$now = date('Y-m-d H:i:s');
 
@@ -47,7 +47,7 @@ class UserRepo
 				'email' => $email,
 				'password_hash' => $passwordHash,
 				'name' => $name,
-				'is_active' => 1, // '1' is valid boolean input on pgsql, valid TINYINT on mysql
+				'is_active' => $isActive ? 1 : 0, // '1' is valid boolean input on pgsql, valid TINYINT on mysql
 				'created_at' => $now,
 				'updated_at' => $now
 			]
@@ -58,8 +58,13 @@ class UserRepo
 			email: $email,
 			passwordHash: $passwordHash,
 			name: $name,
-			is_active: true,
+			is_active: $isActive,
 		);
+	}
+
+	public function delete(int $id): void
+	{
+		$this->db->execute('DELETE FROM users WHERE id = :id', ['id' => $id]);
 	}
 
 	public function paginate(array $filters = [], int $page = 1, int $perPage = 15): array
