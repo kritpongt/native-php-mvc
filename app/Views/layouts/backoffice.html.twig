@@ -47,7 +47,6 @@
 				<!-- Dropdown Flyout Menu -->
 				<div id="userDropdown" class="hidden absolute bottom-2 left-full ml-2 w-48 bg-surface-2 border border-line rounded-xl shadow-lg p-1.5 space-y-1 z-50">
 					<a href="{{ url('/backoffice/profile') }}" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-fg-secondary hover:bg-surface-1 hover:text-fg transition-colors">
-						{# <svg class="w-4 h-4" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> #}
 						{{ icon.use('profile', 'w-4 h-4') }}
 						{{ t('backoffice.edit_profile') }}
 					</a>
@@ -84,15 +83,6 @@
 							</a>
 						{% endfor %}
 					</div>
-
-					{# <div class="flex items-center gap-2">
-						<span class="w-8 h-8 rounded-full bg-accent-bg text-accent-text grid place-items-center text-xs font-medium">{{ user.name|slice(0, 2)|upper }}</span>
-						<span class="text-sm">{{ user.name }}</span>
-					</div> #}
-					{# <form method="post" action="{{ url('/bakcoffice/logout') }}">
-						<input type="hidden" name="_csrf" value="{{ csrf_token }}">
-						<button type="submit" class="text-sm text-danger-text">{{ t('backoffice.logout') }}</button>
-					</form> #}
 				</div>
 			</header>
 			<main id="main-content" class="p-6">
