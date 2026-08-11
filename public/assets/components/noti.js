@@ -7,11 +7,23 @@ document.addEventListener('click', (e) => {
 // Auto-dismiss - htmx:load fires on initial load AND after every swap
 document.addEventListener('htmx:load', (e) => {
   const scope = e.detail?.elt ?? document
-  scope.querySelectorAll('[data-autoclose]').forEach((el) => {
+
+  // collect root and descendants
+  const elements = []
+  if (scope.matches && scope.matches('[data-autoclose]')) {
+    elements.push(scope)
+  }
+  if (scope.querySelectorAll) {
+    elements.push(...scope.querySelectorAll('[data-autoclose]'))
+  }
+
+  elements.forEach((el) => {
     if (el.dataset.notiScheduled) return
     el.dataset.notiScheduled = '1'
+
     const ms = parseInt(el.dataset.autoclose, 10)
     if (!(ms > 0)) return
+
     el.querySelector('.noti-timer')?.style.setProperty('animation-duration', `${ms}ms`)
     setTimeout(() => el.remove(), ms)
   })
