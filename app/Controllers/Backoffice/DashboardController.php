@@ -17,9 +17,15 @@ final class DashboardController
 
 	public function index(Request $request): Response
 	{
-		// Auth middleware guarantees a user here
-		return Response::html($this->view->renderPage('backoffice/dashboard', [
+		$data = [
 			'user' => $this->auth->user()
-		]));
+		];
+
+		if($request->isHtmx()){
+			return Response::html($this->view->renderPartial('backoffice/dashboard', $data));
+		}
+
+		// Auth middleware guarantees a user here
+		return Response::html($this->view->renderPage('backoffice/dashboard', $data));
 	}
 }
