@@ -5,5 +5,5 @@
 4. [] error page e.g. 404, 403
 5. [] migrations cannot rollback when have data or environment is **production**
 6. [x] assign role with user cli
-7. [] no cache twig when environment is dev
+7. [] no cache twig when environment is dev (twig extension)
 8. [] helper date with thai format
