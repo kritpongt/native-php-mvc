@@ -146,10 +146,10 @@ final class UserController
 		];
 
 		if ($request->isHtmx()) {
-			return Response::html($this->view->renderPartial("backoffice/users/{$userId}/edit", $data));
+			return Response::html($this->view->renderPartial("backoffice/users/edit", $data));
 		}
 
-		return Response::html($this->view->renderPage("backoffice/users/{$userId}/edit", $data));
+		return Response::html($this->view->renderPage("backoffice/users/edit", $data));
 	}
 
 	public function update(Request $request, string $id): Response
