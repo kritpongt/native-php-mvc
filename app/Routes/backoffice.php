@@ -24,7 +24,9 @@ return static function(Router $router): void{
 		// users
 		$r->get('/users', [UserController::class, 'index'], [Permission::with('users.view')]);
 		$r->get('/users/create', [UserController::class, 'create'], [Permission::with('users.manage')]);
+		$r->get('/users/{id}/edit', [UserController::class, 'edit'], [Permission::with('users.manage')]);
 		$r->post('/users', [UserController::class, 'store'], [Permission::with('users.manage')]);
+		$r->post('/users/{id}/update', [UserController::class, 'update'], [Permission::with('users.manage')]);
 		$r->post('/users/{id}/delete', [UserController::class, 'destroy'], [Permission::with('users.manage')]);
 
 		$r->post('/logout', [AuthController::class, 'destroy']);

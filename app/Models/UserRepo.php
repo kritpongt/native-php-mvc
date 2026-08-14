@@ -25,6 +25,16 @@ class UserRepo
 
 		return $row === null ? null : $this->map($row);
 	}
+	
+	public function findByEmailExceptId(string $email, int $excludeId): ?User
+	{
+		$row = $this->db->selectOne(
+			'SELECT id, email, password_hash, name, is_active FROM users WHERE email = :email AND id != :id',
+			['email' => $email, 'id' => $excludeId]
+		);
+
+		return $row === null ? null : $this->map($row);
+	}
 
 	public function findById(int $id): ?User
 	{
@@ -59,6 +69,29 @@ class UserRepo
 			passwordHash: $passwordHash,
 			name: $name,
 			is_active: $isActive,
+		);
+	}
+
+	public function update(int $id, string $email, string $name, bool $isActive, ?string $passwordHash = null): void
+	{
+		$now = date('Y-m-d H:i:s');
+		$params = [
+			'id' => $id,
+			'email' => $email,
+			'name' => $name,
+			'is_active' => $isActive ? 1 : 0,
+			'updated_at' => $now
+		];
+
+		$passwordSql = '';
+		if ($passwordHash !== null) {
+			$passwordSql = 'password_hash = :password_hash, ';
+			$params['password_hash'] = $passwordHash;
+		}
+
+		$this->db->execute(
+			"UPDATE users SET email = :email, name = :name, is_active = :is_active, {$passwordSql} updated_at = :updated_at WHERE id = :id",
+			$params
 		);
 	}
 

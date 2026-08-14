@@ -45,6 +45,11 @@ class RoleRepo
 		$this->db->execute('DELETE FROM roles WHERE id = :id', ['id' => $id]);
 	}
 
+	public function revokeAllFromUser(int $userId): void
+	{
+		$this->db->execute('DELETE FROM user_roles WHERE user_id = :user_id', ['user_id' => $userId]);
+	}
+
 	/** idempotent: assigning twice is a no-op, not a PK explosion */
 	public function assignToUser(int $userId, int $roleId): void
 	{

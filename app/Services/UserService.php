@@ -39,6 +39,26 @@ final class UserService
 		return $user;
 	}
 
+	public function update(int $id, string $name, string $email, bool $isActive, ?string $roleName, ?string $password = null): void
+	{
+		$role = null;
+		if($roleName !== null){
+			$role = $this->roles->findByName($roleName);
+			if($role === null){
+				throw new InvalidArgumentException("role not found: {$roleName}");
+			}
+		}
+
+		$passwordHash = ($password !== null && trim($password) !== '') ? password_hash($password, PASSWORD_ARGON2ID) : null;
+
+		$this->users->update($id, $email, $name, $isActive, $passwordHash);
+
+		$this->roles->revokeAllFromUser($id);
+		if($role !== null){
+			$this->roles->assignToUser($id, $role->id);
+		}
+	}
+
 	public function delete(int $id, int $actingUserId): void
 	{
 		if($id === $actingUserId){

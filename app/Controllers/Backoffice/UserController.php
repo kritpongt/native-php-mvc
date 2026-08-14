@@ -50,7 +50,7 @@ final class UserController
 			return Response::html($this->view->renderPartial('backoffice/users/index', $data));
 		}
 
-		return Response::html($this->view->renderPage('backoffice/users', $data));
+		return Response::html($this->view->renderPage('backoffice/users/index', $data));
 	}
 
 	/** GET /backoffice/users/create */
@@ -67,7 +67,7 @@ final class UserController
 			return Response::html($this->view->renderPartial('backoffice/users/create', $data));
 		}
 
-		return Response::html($this->view->renderPage('backoffice/users_create', $data));
+		return Response::html($this->view->renderPage('backoffice/users/create', $data));
 	}
 
 	/** POST /backoffice/users */
@@ -126,6 +126,84 @@ final class UserController
 		return $request->isHtmx()
 			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/users/create", "target": "#main-content"}')
 			: Response::redirect('/backoffice/users/create');
+	}
+
+	public function edit(Request $request, string $id): Response
+	{
+		$userId = ctype_digit($id) ? (int) $id : 0;
+		$targetUser = $this->userRepo->findById($userId);
+
+		if ($targetUser === null) {
+			$this->session->flash('users_error', 'backoffice.users.error_not_found');
+			return $this->redirectToUsers($request);
+		}
+
+		$data = [
+			'targetUser' => $targetUser,
+			'roles' => $this->roleRepo->all(),
+			'errors' => $this->session->getFlash('users_edit_errors', []),
+			'user' => $this->auth->user()
+		];
+
+		if ($request->isHtmx()) {
+			return Response::html($this->view->renderPartial("backoffice/users/{$userId}/edit", $data));
+		}
+
+		return Response::html($this->view->renderPage("backoffice/users/{$userId}/edit", $data));
+	}
+
+	public function update(Request $request, string $id): Response
+	{
+		$userId = ctype_digit($id) ? (int) $id : 0;
+		
+		$email = strtolower(trim((string) $request->input('email', '')));
+		$password = (string) $request->input('password', '');
+		$confirmPassword = (string) $request->input('confirm_password', '');
+		$name = trim((string) $request->input('name', ''));
+		$role = trim((string) $request->input('role', ''));
+		$isActive = $request->input('is_active') === '1';
+
+		$errors = [];
+
+		if($name === ''){
+			$errors['name'] = 'backoffice.users.error_name_required';
+		}
+		if(filter_var($email, FILTER_VALIDATE_EMAIL) === false){
+			$errors['email'] = 'backoffice.users.error_email_invalid';
+		}
+		if($this->userRepo->findByEmailExceptId($email, $userId) !== null){
+			$errors['email'] = 'backoffice.users.error_email_taken';
+		}
+		if($password !== '' && strlen($password) < 8){
+			$errors['password'] = 'backoffice.users.error_password_min';
+		}
+		if($password !== '' && !hash_equals($password, $confirmPassword)){
+			$errors['confirm_password'] = 'backoffice.users.error_password_mismatch';
+		}
+		if($role !== '' && $this->roleRepo->findByName($role) === null){
+			$errors['role'] = 'backoffice.users.error_role_invalid';
+		}
+
+		if($errors !== []){
+			return $this->backToEdit($request, $errors, $userId);
+		}
+
+		$this->user->update($userId, $name, $email, $isActive, $role, $password);
+
+		$this->session->flash('users_success', 'backoffice.users.success_edited');
+	
+		return $request->isHtmx()
+			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/users", "target": "#main-content"}')
+			: Response::redirect('/backoffice/users');
+	}
+
+	private function backToEdit(Request $request, array $errors, int $userId): Response
+	{
+		$this->session->flash('users_edit_errors', $errors);
+		
+		return $request->isHtmx()
+			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/users/'.$userId.'/edit", "target": "#main-content"}')
+			: Response::redirect("/backoffice/users/{$userId}/edit");
 	}
 
 	public function destroy(Request $request, string $id): Response
