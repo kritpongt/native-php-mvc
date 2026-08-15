@@ -6,7 +6,15 @@ declare(strict_types=1);
 return [
 	'permissions' => [
 		'users.view',
-		'users.manage'
+		'users.add',
+		'users.edit',
+		'users.delete',
+		'users.manage',
+		'roles.view',
+		'roles.add',
+		'roles.edit',
+		'roles.delete',
+		'roles.manage'
 	],
 	// role => list of permissions. '*' = everything in 'permissions' above
 	'roles' => [

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Controllers\Backoffice\AuthController;
 use App\Controllers\Backoffice\DashboardController;
+use App\Controllers\Backoffice\RoleController;
 use App\Controllers\Backoffice\UserController;
 use App\Middlewares\Auth;
 use App\Middlewares\Guest;
@@ -28,6 +29,14 @@ return static function(Router $router): void{
 		$r->post('/users', [UserController::class, 'store'], [Permission::with('users.manage')]);
 		$r->post('/users/{id}/update', [UserController::class, 'update'], [Permission::with('users.manage')]);
 		$r->post('/users/{id}/delete', [UserController::class, 'destroy'], [Permission::with('users.manage')]);
+
+		// roles
+		$r->get('/roles', [RoleController::class, 'index'], [Permission::with('roles.view')]);
+		$r->get('/roles/create', [RoleController::class, 'create'], [Permission::with('roles.manage')]);
+		$r->get('/roles/{id}/edit', [RoleController::class, 'edit'], [Permission::with('roles.manage')]);
+		$r->post('/roles', [RoleController::class, 'store'], [Permission::with('roles.manage')]);
+		$r->post('/roles/{id}/update', [RoleController::class, 'update'], [Permission::with('roles.manage')]);
+		$r->post('/roles/{id}/delete', [RoleController::class, 'destroy'], [Permission::with('roles.manage')]);
 
 		$r->post('/logout', [AuthController::class, 'destroy']);
 	});

@@ -69,6 +69,17 @@ class PermissionRepo
 		$this->db->execute('DELETE FROM role_permissions WHERE role_id = :role_id', ['role_id' => $roleId]);
 	}
 
+	/** @return list<int> */
+	public function getIdsForRole(int $roleId): array
+	{
+		$rows = $this->db->select(
+			'SELECT permission_id FROM role_permissions WHERE role_id = :role_id',
+			['role_id' => $roleId]
+		);
+		
+		return array_map(static fn(array $row): int => (int) $row['permission_id'], $rows);
+	}
+
 	/**
 	 * THE authorization query - one JOIN per request, called by AuthorizationService.
 	 * DISTINCT: two roles sharing a permission must not duplicate it.

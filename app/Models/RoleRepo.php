@@ -19,6 +19,26 @@ class RoleRepo
 		return $row === null ? null : $this->map($row);
 	}
 
+	public function findById(int $id): ?Role
+	{
+		$row = $this->db->selectOne(
+			'SELECT id, name FROM roles WHERE id = :id',
+			['id' => $id]
+		);
+
+		return $row === null ? null : $this->map($row);
+	}
+
+	public function findByNameExceptId(string $name, int $id): ?Role
+	{
+		$row = $this->db->selectOne(
+			'SELECT id, name FROM roles WHERE name = :name AND id != :id',
+			['name' => $name, 'id' => $id]
+		);
+
+		return $row === null ? null : $this->map($row);
+	}
+
 	/** @return list<Role> */
 	public function all(): array
 	{
@@ -37,6 +57,14 @@ class RoleRepo
 		);
 
 		return new Role(id: $this->db->lastInsertId(), name: $name);
+	}
+
+	public function update(int $id, string $name): void
+	{
+		$this->db->execute(
+			'UPDATE roles SET name = :name, updated_at = :updated_at WHERE id = :id',
+			['id' => $id, 'name' => $name, 'updated_at' => date('Y-m-d H:i:s')]
+		);
 	}
 
 	/** pivots die with it - ON DELETE CASCADE */
