@@ -1,0 +1,39 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% block main %}
+	<div class="max-w-2xl mx-auto space-y-6">
+
+		<!-- Page Header -->
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-xl font-semibold text-fg">{{ t('backoffice.users.edit_title')|default('Edit User') }}</h1>
+				<p class="text-sm text-fg-secondary">{{ t('backoffice.users.edit_subtitle')|default('Update user details') }}</p>
+			</div>
+			<a href="{{ url('/backoffice/users') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-1 transition-colors"
+				hx-get="{{ url('/backoffice/users') }}"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-push-url="true">
+				{{ icon.use('back') }}
+				{{ t('backoffice.common.back') }}
+			</a>
+		</div>
+
+		<!-- Error Notification -->
+		{% if errors is not empty %}
+			{% include 'components/noti.html.twig' with {
+				message: 'backoffice.common.form_error_title',
+				details: errors,
+				type: 'error',
+				position: 'right',
+			} %}
+		{% endif %}
+
+		<!-- Form -->
+		{% include "partials/backoffice/users/_form.html.twig" with {
+			action_url: url('/backoffice/users/' ~ targetUser.id ~ '/update'),
+			user_data: targetUser,
+			is_edit: true
+		} %}
+	</div>
+{% endblock %}

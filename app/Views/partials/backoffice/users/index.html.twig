@@ -102,7 +102,11 @@
 						</td>
 						<td class="px-4 py-3 text-right">
 							<div class="flex items-center justify-end gap-1">
-								<a href="{{ url('/backoffice/users/' ~ item.id ~ '/edit') }}" class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="Edit">
+								<a href="{{ url('/backoffice/users/' ~ item.id ~ '/edit') }}" 
+									class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="Edit"
+									hx-get="{{ url('/backoffice/users/' ~ item.id ~ '/edit') }}"
+									hx-target="#main-content"
+									hx-push-url="true">
 									{{ icon.use('edit') }}
 								</a>
 								<form method="post" action="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}" class="m-0 inline"

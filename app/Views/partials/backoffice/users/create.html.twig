@@ -2,6 +2,7 @@
 
 {% block main %}
 	<div class="max-w-2xl mx-auto space-y-6">
+
 		<!-- Page Header -->
 		<div class="flex items-center justify-between">
 			<div>
@@ -13,24 +14,13 @@
 				hx-target="#main-content"
 				hx-swap="innerHTML"
 				hx-push-url="true">
-				{# <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> #}
 				{{ icon.use('back') }}
 				{{ t('backoffice.common.back') }}
 			</a>
 		</div>
 
+		<!-- Error Notification -->
 		{% if errors is not empty %}
-			{# <div class="p-4 rounded-xl border border-danger-text/20 bg-danger-bg/50 text-danger-text space-y-2">
-				<div class="flex items-center gap-2 font-medium text-sm">
-					{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-					<span>{{ t('backoffice.common.form_error_title')|default('There were some errors with your submission') }}</span>
-				</div>
-				<ul class="list-disc list-inside text-xs space-y-1 pl-1 opacity-90">
-					{% for field, message in errors %}
-						<li>{{ t(message) }}</li>
-					{% endfor %}
-				</ul>
-			</div> #}
 			{% include 'components/noti.html.twig' with {
 				message: 'backoffice.comment.form_error_title',
 				details: errors,
@@ -40,126 +30,10 @@
 		{% endif %}
 
 		<!-- Form -->
-		<form method="post" action="{{ url('/backoffice/users/create') }}" class="p-6 rounded-xl border border-line bg-surface-2 space-y-5"
-			hx-post="{{ url('/backoffice/users') }}"
-			hx-target="#main-content"
-			hx-swap="innerHTML">
-			<input type="hidden" name="_csrf" value="{{ csrf_token }}">
-
-			<!-- Name Field -->
-			<div>
-				<label for="name" class="block text-sm font-medium text-fg mb-1.5">{{ t('backoffice.users.form_name') }}</label>
-				<input type="text" id="name" name="name" value="{{ old.name is defined ? old.name : '' }}" required
-					class="w-full px-3 py-2 text-sm rounded-lg border bg-surface text-fg focus:outline-none transition-all
-					{% if errors.name is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}"
-					placeholder="{{ t('backoffice.users.placeholder_name') }}">
-				{% if errors.name is defined %}
-					<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-						{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-						{{ t(errors.name) }}
-					</p>
-				{% endif %}
-			</div>
-
-			<!-- Email Field -->
-			<div>
-				<label for="email" class="block text-sm font-medium text-fg mb-1.5">{{ t('backoffice.users.form_email') }}</label>
-				<input type="email" id="email" name="email" value="{{ old.email is defined ? old.email : '' }}" required
-					class="w-full px-3 py-2 text-sm rounded-lg border bg-surface text-fg focus:outline-none transition-all
-					{% if errors.email is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}"
-					placeholder="name@example.com">
-				{% if errors.email is defined %}
-					<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-						{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-						{{ t(errors.email) }}
-					</p>
-				{% endif %}
-			</div>
-
-			<!-- Password & Confirm Password (Grid 2 คอลัมน์) -->
-			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<div>
-					<label for="password" class="block text-sm font-medium text-fg mb-1.5">{{ t('backoffice.users.form_password') }}</label>
-					<input type="password" id="password" name="password" required
-						class="w-full px-3 py-2 text-sm rounded-lg border bg-surface text-fg focus:outline-none transition-all
-						{% if errors.password is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}">
-					{% if errors.password is defined %}
-						<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-							{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-							{{ t(errors.password) }}
-						</p>
-					{% endif %}
-				</div>
-				<div>
-					<label for="confirm_password" class="block text-sm font-medium text-fg mb-1.5">{{ t('backoffice.users.form_confirm_password') }}</label>
-					<input type="password" id="confirm_password" name="confirm_password" required
-						class="w-full px-3 py-2 text-sm rounded-lg border bg-surface text-fg focus:outline-none transition-all
-						{% if errors.confirm_password is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}">
-					{% if errors.confirm_password is defined %}
-						<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-							{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-							{{ t(errors.confirm_password) }}
-						</p>
-					{% endif %}
-				</div>
-			</div>
-
-			<!-- Role Field -->
-			<div>
-				<label for="role" class="block text-sm font-medium text-fg mb-1.5">{{ t('backoffice.users.form_role') }}</label>
-				<select id="role" name="role" class="w-full px-3 py-2 text-sm rounded-lg border bg-surface text-fg focus:outline-none transition-all
-					{% if errors.role is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}">
-					<option value="">{{ t('backoffice.users.no_role') }}</option>
-					{% for role in roles %}
-						<option value="{{ role.name }}" {% if old.role is defined and old.role == role.name %}selected{% endif %}>{{ role.name }}</option>
-					{% endfor %}
-				</select>
-				{% if errors.role is defined %}
-					<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-						{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-						{{ t(errors.role) }}
-					</p>
-				{% endif %}
-			</div>
-
-			<!-- Active Status (Radio Options) -->
-			<div>
-				<label class="block text-sm font-medium text-fg mb-2">{{ t('backoffice.users.col_status') }}</label>
-				<div class="flex items-center gap-6">
-					<label class="inline-flex items-center gap-2 cursor-pointer text-sm text-fg">
-						<input type="radio" name="is_active" value="1"
-							{% if old.is_active is not defined or old.is_active == '1' or old.is_active == true %}checked{% endif %}
-							class="w-4 h-4 text-accent border-line focus:ring-accent bg-surface">
-						<span>{{ t('backoffice.users.status_active') }}</span>
-					</label>
-					<label class="inline-flex items-center gap-2 cursor-pointer text-sm text-fg">
-						<input type="radio" name="is_active" value="0"
-							{% if old.is_active is defined and (old.is_active == '0' or old.is_active == false) %}checked{% endif %}
-							class="w-4 h-4 text-accent border-line focus:ring-accent bg-surface">
-						<span>{{ t('backoffice.users.status_inactive') }}</span>
-					</label>
-				</div>
-				{% if errors.is_active is defined %}
-					<p class="mt-1 text-xs text-danger-text flex items-center gap-1">
-						{{ icon.use('error', 'w-3.5 h-3.5 shrink-0') }}
-						{{ t(errors.is_active) }}
-					</p>
-				{% endif %}
-			</div>
-
-			<!-- Form Actions -->
-			<div class="flex items-center justify-end gap-3 pt-4 border-t border-line">
-				<button type="button" class="px-4 py-2 text-sm font-medium border border-line rounded-lg text-fg-secondary hover:bg-surface-1 transition-colors"
-					hx-get="{{ url('/backoffice/users') }}"
-					hx-target="#main-content"
-					hx-swap="innerHTML"
-					hx-push-url="true">
-					{{ t('backoffice.common.cancel') }}
-				</button>
-				<button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-fg hover:opacity-90 transition-opacity">
-					{{ t('backoffice.common.save') }}
-				</button>
-			</div>
-		</form>
+		{% include "partials/backoffice/users/_form.html.twig" with {
+			action_url: url('/backoffice/users'),
+			user_data: old ?? null,
+			is_edit: false
+		} %}
 	</div>
 {% endblock %}
