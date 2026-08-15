@@ -1,3 +1,5 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
 {% block main %}
 	{% set noti_type = success ? 'success' : (error ? 'error' : null) %}
 	{% set noti_message = success ?: error %}
@@ -21,13 +23,14 @@
 				hx-target="#main-content"
 				hx-swap="innerHTML"
 				hx-push-url="true">
-				<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+				{{ icon.use('plus') }}
 				{{ t('backoffice.users.add_new') }}
 			</a>
 		</div>
 
 		{# Filter & Search Bar #}
 		{% include "components/search_filter.html.twig" with {
+			action_url: url('/backoffice/users'),
 			search: search,
 			filters: [
 				{

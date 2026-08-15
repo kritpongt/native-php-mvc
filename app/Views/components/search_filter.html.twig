@@ -1,8 +1,9 @@
-{# components/search_filter.html.twig #}
+{% import "components/icon_macro.html.twig" as icon %}
+
 <div class="p-3 bg-surface-2 border border-line rounded-xl">
 	<form id="search-filter-form" method="get"
-		action="{{ action|default(url('/backoffice/users')) }}"
-		hx-get="{{ action|default(url('/backoffice/users')) }}"
+		action="{{ action_url }}"
+		hx-get="{{ action_url }}"
 		hx-target="#data-table-container"
 		hx-select="#data-table-container"
 		hx-swap="outerHTML"
@@ -16,10 +17,7 @@
 				value="{{ search|default('') }}" 
 				placeholder="{{ placeholder|default(t('backoffice.search')) }}" 
 				class="w-full pl-9 pr-3 py-1.5 text-sm bg-surface-0 border border-line rounded-lg text-fg placeholder:text-fg-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
-			<svg class="w-4 h-4 absolute left-3 top-2.5 text-fg-secondary pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="11" cy="11" r="8"/>
-				<path d="m21 21-4.3-4.3"/>
-			</svg>
+			{{ icon.use('search', 'w-4 h-4 absolute left-3 top-2.5 text-fg-secondary pointer-events-none') }}
 		</div>
 
 		{# Filters Dropdown #}
