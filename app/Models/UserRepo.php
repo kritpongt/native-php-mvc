@@ -19,7 +19,7 @@ class UserRepo
 	public function findByEmail(string $email): ?User
 	{
 		$row = $this->db->selectOne(
-			'SELECT id, email, password_hash, name, is_active FROM users WHERE email = :email',
+			'SELECT id, email, password_hash, name, is_active, created_at FROM users WHERE email = :email',
 			['email' => $email]
 		);
 
@@ -29,7 +29,7 @@ class UserRepo
 	public function findByEmailExceptId(string $email, int $excludeId): ?User
 	{
 		$row = $this->db->selectOne(
-			'SELECT id, email, password_hash, name, is_active FROM users WHERE email = :email AND id != :id',
+			'SELECT id, email, password_hash, name, is_active, created_at FROM users WHERE email = :email AND id != :id',
 			['email' => $email, 'id' => $excludeId]
 		);
 
@@ -39,7 +39,7 @@ class UserRepo
 	public function findById(int $id): ?User
 	{
 		$row = $this->db->selectOne(
-			'SELECT id, email, password_hash, name, is_active FROM users WHERE id = :id',
+			'SELECT id, email, password_hash, name, is_active, created_at FROM users WHERE id = :id',
 			['id' => $id]
 		);
 
@@ -69,6 +69,7 @@ class UserRepo
 			passwordHash: $passwordHash,
 			name: $name,
 			is_active: $isActive,
+			create_at: $now
 		);
 	}
 
