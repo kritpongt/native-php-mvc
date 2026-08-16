@@ -45,8 +45,8 @@ npm install -D tailwindcss @tailwindcss/cli
 {
   "private": true,
   "scripts": {
-    "dev": "tailwindcss -i resources/css/app-tailwind.css -o public/assets/app-tailwind.css --watch",
-    "build": "tailwindcss -i resources/css/app-tailwind.css -o public/assets/app-tailwind.css --minify"
+    "dev": "tailwindcss -i resources/css/tailwind.css -o public/assets/tailwind.css --watch",
+    "build": "tailwindcss -i resources/css/tailwind.css -o public/assets/tailwind.css --minify"
   },
 }
 ```

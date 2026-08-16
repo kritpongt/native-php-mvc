@@ -10,7 +10,7 @@ Long-term project intended as the foundation for multiple future projects.
 - PHP 8.5+ — `declare(strict_types=1)` in every file, full type hints on every parameter and return
 - Allowed libraries: **Twig** (view), **PHPUnit** (test), **HTMX** (frontend), **Tailwind CSS** (styling) — adding any other dependency requires discussion first
 - HTMX must be self-hosted in `public/assets/` (no CDN, to keep CSP strict)
-- Tailwind via **Node build pipeline** (npm) — dev-time only, never a runtime dependency: compile `resources/css/app.css` → `public/assets/app.css` as a static file and commit it (production needs no node)
+- Tailwind via **Node build pipeline** (npm) — dev-time only, never a runtime dependency: compile `resources/css/tailwind.css` → `public/assets/tailwind.css` as a static file and commit it (production needs no node)
 - Node supply chain: commit `package-lock.json` and install with `npm ci`, git-ignore `node_modules/`; adding npm packages/Tailwind plugins requires discussion first, same as any other dependency
 - Database: **switchable between MySQL/MariaDB and PostgreSQL** via per-project config
 
@@ -19,9 +19,9 @@ Long-term project intended as the foundation for multiple future projects.
 ```
 public/              # the only docroot the web server sees — all other code lives outside the web root
 ├── index.php        # front controller
-└── assets/          # app.css (built by tailwind — committed), htmx.min.js
+└── assets/          # tailwind.css (built by tailwind — committed), htmx.min.js
 resources/
-└── css/app.css      # tailwind source → built to public/assets/app.css
+└── css/tailwind.css # tailwind source → built to public/assets/tailwind.css
 core/                # hand-written framework — separate from app code so child projects can upgrade core without touching app/
 │                    # Router, Request, Response, Database, Session(+Interface), Csrf, Container, Env, migration runner
 └── Console/         # console-only core helpers (MigrationMaker, Prompt)
@@ -51,6 +51,10 @@ tests/
 
 ## Core conventions (class design & DI)
 
+- **Coding Style**:
+  - Indent using **Tabs**, not spaces.
+  - Brace placement: Classes and Methods use the next line (Allman style, e.g., `class Foo \n {`). Control structures use the same line with no space before the brace (e.g., `if(...){`).
+- **Types**: Use `strict_types=1` in every file. Use **PHPDoc** heavily for arrays and generics (e.g. `/** @var array<int, User> */`) — no external static analysis tools (like PHPStan) are required, so PHPDoc is our source of truth.
 - Classes are `final` by default — opening one up is a deliberate decision, per this table:
   - **core classes that touch PHP globals/IO** (e.g. `Session` → `SessionInterface`): extract an interface; consumers type-hint the interface, bootstrap binds interface → implementation in the container
   - **repositories**: plain non-final classes so unit tests can mock them directly — no interface ceremony
@@ -99,6 +103,7 @@ tests/
 - All routes are declared in `app/Routes/` — one file per zone (`web.php`, `backoffice.php`); this directory is the security audit surface: reading it must answer which endpoints are public / require login / are rate-limited
 - Route handlers are `[Controller::class, 'method']` only — closures are forbidden
 - Middleware binds at the route/group level | middleware that must run on every request (SecurityHeaders, Session, Csrf) is a global pipeline in bootstrap — never opt-in per route
+- **API Response Format**: If returning JSON, standardize the wrapper: `{"success": true, "data": {...}}` or `{"success": false, "error": "Message"}`.
 
 ## HTMX conventions
 
@@ -113,6 +118,10 @@ tests/
 - SQL portability is proven by running the integration suite on both MySQL and PostgreSQL (as a CI matrix once CI exists)
 - Security-critical services (auth, tokens, csrf, rate limiting) must have unit tests in the same commit as the feature
 - Bug fixes require a reproducing test before the fix
+
+## Version Control (Git)
+
+- Use **Conventional Commits** for commit messages (e.g., `feat: ...`, `fix: ...`, `refactor: ...`).
 
 ## Commands (after scaffolding)
 
