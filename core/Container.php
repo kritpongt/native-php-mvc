@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Exception\ContainerException;
 use ReflectionClass;
 use ReflectionNamedType;
 use RuntimeException;
@@ -62,6 +63,9 @@ final class Container
 			$object = isset($this->factories[$id])
 				? ($this->factories[$id])($this) 	// registered factory wins
 				: $this->autowire($id);						// else build by reflection
+		}catch(ContainerException $e){
+			$e->addPath($id);
+			throw $e;
 		}finally{
 			unset($this->resolving[$id]);
 		}
@@ -109,7 +113,7 @@ final class Container
 				continue;
 			}
 
-			throw new RuntimeException("Cannot resolve {$class}: \${$param->getName()} has no class type and no default");
+			throw new ContainerException("Cannot resolve {$class}: \${$param->getName()} has no class type and no default");
 		}
 
 		return $ref->newInstanceArgs($args);
