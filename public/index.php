@@ -9,6 +9,8 @@ use App\Middlewares\SecurityHeaders;
 use App\Middlewares\ShareViewData;
 use App\Middlewares\StartSession;
 use App\Middlewares\VerifyCsrf;
+use Core\ClientContext;
+use Core\ClientContextInterface;
 use Core\Config;
 use Core\Container;
 use Core\Csrf;
@@ -81,6 +83,10 @@ $container->singleton(View::class, static function(Container $c): View{
 	));
 
 	return $view;
+});
+
+$container->singleton(ClientContextInterface::class, static function(Container $c): ClientContextInterface{
+	return new ClientContext();
 });
 
 $router = new Router($container);
