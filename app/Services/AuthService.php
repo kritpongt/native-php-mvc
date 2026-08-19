@@ -45,7 +45,7 @@ final class AuthService
 		// and inactive account all cost the same time
 		$verified = password_verify($password, $user?->passwordHash ?? self::DUMMY_HASH);
 
-		if($user === null || !$verified || !$user->isActive){
+		if($user === null || !$verified || !$user->is_active){
 			$this->attempts->record($email, $ip);
 			// table cleans itself, no cron job
 			$this->attempts->purgeBefore($since);
