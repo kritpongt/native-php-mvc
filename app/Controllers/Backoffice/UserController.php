@@ -131,7 +131,8 @@ final class UserController
 	public function edit(Request $request, string $id): Response
 	{
 		$userId = ctype_digit($id) ? (int) $id : 0;
-		$targetUser = $this->userRepo->findById($userId);
+		// $targetUser = $this->userRepo->findById($userId);
+		$targetUser = $this->userRepo->findByIdWithRoles($userId);
 
 		if ($targetUser === null) {
 			$this->session->flash('users_error', 'backoffice.users.error_not_found');

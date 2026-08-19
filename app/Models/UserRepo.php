@@ -46,6 +46,26 @@ class UserRepo
 		return $row === null ? null : $this->map($row);
 	}
 
+	public function findByIdWithRoles(int $id): ?User
+	{
+		$row = $this->db->selectOne(
+			'SELECT id, email, password_hash, name, is_active, created_at FROM users WHERE id = :id',
+			['id' => $id]
+		);
+		if ($row === null) { return null; }
+
+		$roles = $this->db->select(
+			'SELECT r.name FROM roles r INNER JOIN user_roles ur ON r.id = ur.role_id WHERE ur.user_id = :id',
+			['id' => $id]
+		);
+		$roleNames = array_column($roles, 'name');
+
+		$row['roles'] = $roleNames;
+		$row['role_names'] = implode(', ', $roleNames);
+
+		return $this->map($row);
+	}
+
 	public function create(string $email, string $passwordHash, string $name, bool $isActive = true): User
 	{
 		$now = date('Y-m-d H:i:s');
@@ -69,7 +89,7 @@ class UserRepo
 			passwordHash: $passwordHash,
 			name: $name,
 			is_active: $isActive,
-			create_at: $now
+			created_at: $now
 		);
 	}
 
@@ -146,7 +166,7 @@ class UserRepo
 		}
 
 		$userIds = array_column($rows, 'id');
-		$placeholders = implode(',', array_fill(0, count($userIds), '?')); // [?, ?, ?]
+		$placeholders = implode(',', array_fill(0, count($userIds), '?')); // e.g. [?, ?, ?]
 
 		$roleRows = $this->db->select("SELECT ur.user_id, r.name as role_name 
 			FROM user_roles ur 
