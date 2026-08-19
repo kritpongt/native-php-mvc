@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Controllers\Backoffice\AuditLogController;
 use App\Controllers\Backoffice\AuthController;
 use App\Controllers\Backoffice\DashboardController;
 use App\Controllers\Backoffice\RoleController;
@@ -37,6 +38,9 @@ return static function(Router $router): void{
 		$r->post('/roles', [RoleController::class, 'store'], [Permission::with('roles.manage')]);
 		$r->post('/roles/{id}/update', [RoleController::class, 'update'], [Permission::with('roles.manage')]);
 		$r->post('/roles/{id}/delete', [RoleController::class, 'destroy'], [Permission::with('roles.manage')]);
+
+		// audit logs
+		$r->get('/audit', [AuditLogController::class, 'index']);
 
 		$r->post('/logout', [AuthController::class, 'destroy']);
 	});

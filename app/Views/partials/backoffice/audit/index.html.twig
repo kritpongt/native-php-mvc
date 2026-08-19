@@ -1,0 +1,102 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% block main %}
+	<div class="space-y-6">
+		<!-- Page Title & Actions -->
+		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+			<div>
+				<h1 class="text-xl font-semibold text-fg">Audit Logs</h1>
+				<p class="text-sm text-fg-secondary">View system activity and changes</p>
+			</div>
+		</div>
+
+		{# Filter & Search Bar #}
+		{% include "components/search_filter.html.twig" with {
+			action_url: url('/backoffice/audit'),
+			search: search,
+			filters: [
+				{
+					name: 'action',
+					placeholder: 'All Actions',
+					selected: action,
+					options: [
+						{ value: 'create', label: 'Create' },
+						{ value: 'update', label: 'Update' },
+						{ value: 'delete', label: 'Delete' },
+						{ value: 'login', label: 'Login' }
+					]
+				}
+			]
+		} %}
+
+		{# Data Table #}
+		{% embed "components/data_table.html.twig" with { items: logs } %}
+			{% import "components/icon_macro.html.twig" as icon %}
+
+			{% block headers %}
+				<th class="px-4 py-3">Date</th>
+				<th class="px-4 py-3">User</th>
+				<th class="px-4 py-3">Action</th>
+				<th class="px-4 py-3">Table / Record</th>
+				<th class="px-4 py-3">IP Address</th>
+				<th class="px-4 py-3">Changes</th>
+			{% endblock %}
+
+			{% block rows %}
+				{% for item in items %}
+					<tr class="hover:bg-surface-1/50 transition-colors">
+						<td class="px-4 py-3 text-sm text-fg-secondary">
+							{{ item.log.created_at }}
+						</td>
+						<td class="px-4 py-3">
+							{% if item.user_name %}
+								<div class="flex items-center gap-2">
+									<div class="font-medium text-sm text-fg">{{ item.user_name }}</div>
+								</div>
+							{% else %}
+								<span class="text-sm text-fg-secondary">System / Guest</span>
+							{% endif %}
+						</td>
+						<td class="px-4 py-3">
+							<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-surface-1 border border-line text-fg">
+								{{ item.log.action|upper }}
+							</span>
+						</td>
+						<td class="px-4 py-3 text-sm text-fg-secondary">
+							{{ item.log.table_name }} 
+							{% if item.log.record_id %}
+								<span class="text-xs opacity-70">(#{{ item.log.record_id }})</span>
+							{% endif %}
+						</td>
+						<td class="px-4 py-3 text-sm text-fg-secondary">
+							{{ item.log.ip_address|default('-') }}
+						</td>
+						<td class="px-4 py-3 text-sm">
+							{% if item.log.old_values or item.log.new_values %}
+								<details class="cursor-pointer">
+									<summary class="text-accent text-xs font-medium hover:underline"> View Details</summary>
+									<div class="mt-2 p-2 bg-surface-1 rounded border border-line text-xs font-mono max-w-xs overflow-x-auto">
+										{% if item.log.old_values %}
+											<div class="text-danger-text mb-1">- {{ item.log.old_values }}</div>
+										{% endif %}
+										{% if item.log.new_values %}
+											<div class="text-emerald-500">+ {{ item.log.new_values }}</div>
+										{% endif %}
+									</div>
+								</details>
+							{% else %}
+								<span class="text-fg-muted">-</span>
+							{% endif %}
+						</td>
+					</tr>
+					{% else %}
+					<tr>
+						<td colspan="6" class="px-4 py-8 text-center text-xs text-fg-muted">
+							No audit logs found.
+						</td>
+					</tr>
+				{% endfor %}
+			{% endblock %}
+		{% endembed %}
+	</div>
+{% endblock %}
