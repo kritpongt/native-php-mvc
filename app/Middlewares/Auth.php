@@ -9,17 +9,20 @@ use Core\Config;
 use Core\Middleware;
 use Core\Request;
 use Core\Response;
+use Core\View;
 
 final class Auth implements Middleware
 {
 	public function __construct(
 		private readonly AuthService $auth,
-		private readonly Config $config
+		private readonly Config $config,
+		private readonly View $view
 	){}
 
 	public function handle(Request $request, Closure $next): Response
 	{
 		if($this->auth->check()){
+			$this->view->share('user', $this->auth->user());
 			return $next($request);
 		}
 
@@ -37,6 +40,8 @@ final class Auth implements Middleware
 			// dead cookie (expired / stolen / user inactive) - clear it
 			return $this->toLogin($request)->withoutCookie($cookieName);
 		}
+
+		$this->view->share('user', $this->auth->user());
 
 		$days = (int) $this->config->get('auth.remember_lifetime_days', 30);
 
