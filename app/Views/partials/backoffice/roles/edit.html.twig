@@ -31,7 +31,7 @@
 
 		<!-- Form -->
 		{% include "partials/backoffice/roles/_form.html.twig" with {
-			action_url: url('/backoffice/roles/update'),
+			action_url: url('/backoffice/roles/' ~ targetRole.id ~ '/update'),
 			form_data: {
 				name: targetRole.name,
 				permissions: rolePermissions

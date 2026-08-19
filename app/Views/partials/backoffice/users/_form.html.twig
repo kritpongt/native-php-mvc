@@ -79,7 +79,7 @@
 			{% if errors.role is defined %}border-danger-text focus:ring-2 focus:ring-danger-text/20{% else %}border-line focus:border-accent focus:ring-2 focus:ring-accent/20{% endif %}">
 			<option value="">{{ t('backoffice.users.no_role') }}</option>
 			{% for role in roles %}
-				<option value="{{ role.name }}" {% if (user_data.role ?? '') == role.name %}selected{% endif %}>{{ role.name }}</option>
+				<option value="{{ role.name }}" {% if (user_data.roles[0] ?? '') == role.name %}selected{% endif %}>{{ role.name }}</option>
 			{% endfor %}
 		</select>
 		{% if errors.role is defined %}
