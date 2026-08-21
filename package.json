@@ -1,11 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "dev": "tailwindcss -i resources/css/tailwind.css -o public/assets/tailwind.css --watch",
-    "build": "tailwindcss -i resources/css/tailwind.css -o public/assets/tailwind.css --minify"
+    "dev": "tailwindcss -i resources/css/tailwind.css -o public/assets/css/tailwind.css --watch",
+    "build": "tailwindcss -i resources/css/tailwind.css -o public/assets/css/tailwind.css --minify",
+    "postinstall": "cp node_modules/htmx.org/dist/htmx.min.js public/assets/vendor/htmx.min.js && cp node_modules/sortablejs/Sortable.min.js public/assets/vendor/sortable.min.js"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
     "tailwindcss": "^4.3.3"
+  },
+  "dependencies": {
+    "htmx.org": "^2.0.10",
+    "sortablejs": "^1.15.7"
   }
 }
