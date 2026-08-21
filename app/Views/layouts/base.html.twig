@@ -10,16 +10,17 @@
 	{# htmx reads this meta via hx-headers below - token rides on every ajax call #}
 	<meta name="csrf-token" content="{{ csrf_token }}">
 	<title>{% block title %}native-php-mvc{% endblock %}</title>
-	<link rel="stylesheet" href="/assets/tailwind.css">
-	<link rel="stylesheet" href="/assets/htmx.css">
+	<link rel="stylesheet" href="/assets/css/tailwind.css">
+	<link rel="stylesheet" href="/assets/css/htmx.css">
 </head>
 {# hx-headers on <body> = inherited by every htmx element inside #}
 <body class="bg-surface-0 text-fg" hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
 	{% include 'components/icons.html.twig' %}
 	{% block content %}{% endblock %}
-	<script src="/assets/main.js"></script>
-	<script src="/assets/theme.js"></script>
-	<script src="/assets/htmx.min.js"></script>
-	<script type="module" src="/assets/app.js"></script>
+	<script src="/assets/js/main.js"></script>
+	<script src="/assets/js/theme.js"></script>
+	<script src="/assets/vendor/htmx.min.js"></script>
+	<script src="/assets/vendor/sortable.min.js"></script>
+	<script type="module" src="/assets/js/app.js"></script>
 </body>
 </html>
