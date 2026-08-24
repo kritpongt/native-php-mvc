@@ -65,7 +65,8 @@
 								<form method="post" action="{{ url('/backoffice/roles/' ~ item.id ~ '/delete') }}" class="m-0 inline"
 									hx-post="{{ url('/backoffice/roles/' ~ item.id ~ '/delete') }}"
 									hx-target="#main-content"
-									data-dialog-confirm="Are you sure you want to delete this role?">
+									data-dialog-confirm="Are you sure you want to delete this role?"
+									data-dialog-theme="danger">
 									<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 									<button type="submit" class="p-1.5 text-danger-text hover:bg-surface-1 rounded-lg transition-colors" title="Delete">
 										{{ icon.use('delete') }}

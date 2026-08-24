@@ -115,7 +115,8 @@
 								<form method="post" action="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}" class="m-0 inline"
 									hx-post="{{ url('/backoffice/users/' ~ item.id ~ '/delete') }}"
 									hx-target="#main-content"
-									data-dialog-confirm="{{ t('backoffice.users.confirm_delete') }}">
+									data-dialog-confirm="{{ t('backoffice.users.confirm_delete') }}"
+									data-dialog-theme="danger">
 									<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 									<button type="submit" class="p-1.5 text-danger-text hover:bg-surface-1 rounded-lg transition-colors" title="Delete">
 										{{ icon.use('delete') }}

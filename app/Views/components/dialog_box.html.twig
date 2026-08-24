@@ -6,7 +6,7 @@
 	<div role="dialog" aria-modal="true" aria-labelledby="dialog-box-title"
 		class="confirm-panel absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,26rem)] rounded-xl border border-line bg-surface-2 shadow-lg p-5 space-y-4">
 		<div class="flex items-start gap-3">
-			<span class="w-9 h-9 shrink-0 grid place-items-center rounded-full bg-danger-bg text-danger-text">
+			<span data-dialog-icon-container class="w-9 h-9 shrink-0 grid place-items-center rounded-full bg-danger-bg text-danger-text">
 				{{ icon.use('error', 'w-5 h-5') }}
 			</span>
 			<div class="min-w-0">
@@ -20,9 +20,9 @@
 				class="px-4 py-2 text-sm font-medium border border-line rounded-lg text-fg-secondary hover:bg-surface-1 transition-colors">
 				{{ t('backoffice.common.cancel') }}
 			</button>
-			<button type="button" data-dialog-ok
-				class="px-4 py-2 text-sm font-medium rounded-lg bg-danger-text text-white hover:opacity-90 transition-colors">
-				{{ t('backoffice.common.delete') }}
+			<button type="button" data-dialog-ok data-default-text="{{ t('backoffice.common.confirm')|default('Confirm') }}"
+				class="px-4 py-2 text-sm font-medium rounded-lg transition-colors">
+				{{ t('backoffice.common.confirm') }}
 			</button>
 		</div>
 	</div>
