@@ -1,0 +1,72 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% block main %}
+	<div class="space-y-6">
+		<!-- Page Title & Actions -->
+		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+			<div>
+				<h1 class="text-xl font-semibold text-fg">{{ type|capitalize }}s</h1>
+				<p class="text-sm text-fg-secondary">Manage and view all your {{ type }}s.</p>
+			</div>
+			<a href="{{ url('/backoffice/quotation/create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-fg hover:opacity-90 transition-opacity"
+				hx-get="{{ url('/backoffice/quotation/create') }}"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-push-url="true">
+				{{ icon.use('plus') }}
+				Create Quotation
+			</a>
+		</div>
+
+		{# Data Table #}
+		{% embed "components/data_table.html.twig" with { items: documents } %}
+			{% import "components/icon_macro.html.twig" as icon %}
+
+			{% block headers %}
+				<th class="px-4 py-3">Doc No.</th>
+				<th class="px-4 py-3">Date</th>
+				<th class="px-4 py-3">Status</th>
+				<th class="px-4 py-3 text-right">Total</th>
+				<th class="px-4 py-3 text-right">Actions</th>
+			{% endblock %}
+
+			{% block rows %}
+				{% for doc in items %}
+					<tr class="hover:bg-surface-1/50 transition-colors">
+						<td class="px-4 py-3 font-medium text-fg">
+							{{ doc.document_no }}
+						</td>
+						<td class="px-4 py-3 text-sm text-fg-muted">
+							{{ doc.issue_date }}
+						</td>
+						<td class="px-4 py-3">
+							<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-surface-1 text-fg-muted border border-line">
+								<span class="w-1.5 h-1.5 rounded-full bg-fg-muted"></span>{{ doc.status|capitalize }}
+							</span>
+						</td>
+						<td class="px-4 py-3 text-right font-medium text-fg-secondary">
+							{{ doc.grand_total|number_format(2) }}
+						</td>
+						<td class="px-4 py-3 text-right">
+							<div class="flex items-center justify-end gap-1">
+								<a href="{{ url('/backoffice/quotation/' ~ doc.id) }}" 
+									class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="View"
+									hx-get="{{ url('/backoffice/quotation/' ~ doc.id) }}"
+									hx-target="#main-content"
+									hx-push-url="true">
+									{{ icon.use('show') }}
+								</a>
+							</div>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="5" class="px-4 py-8 text-center text-xs text-fg-muted">
+							No {{ type }}s found.
+						</td>
+					</tr>
+				{% endfor %}
+			{% endblock %}
+		{% endembed %}
+	</div>
+{% endblock %}

@@ -6,6 +6,7 @@ use App\Controllers\Backoffice\AuthController;
 use App\Controllers\Backoffice\DashboardController;
 use App\Controllers\Backoffice\RoleController;
 use App\Controllers\Backoffice\UserController;
+use App\Controllers\Backoffice\QuotationController;
 use App\Middlewares\Auth;
 use App\Middlewares\Guest;
 use App\Middlewares\Permission;
@@ -22,6 +23,13 @@ return static function(Router $router): void{
 	$router->group('/backoffice', [Auth::class], static function(Router $r): void{
 		// dashboard
 		$r->get('', [DashboardController::class, 'index']);
+
+		// quotation
+		$r->get('/quotation', [QuotationController::class, 'index']);
+		$r->get('/quotation/create', [QuotationController::class, 'create']);
+		$r->get('/quotation/{id}', [QuotationController::class, 'show']);
+		$r->post('/quotation', [QuotationController::class, 'store']);
+		$r->post('/quotation/{id}/status', [QuotationController::class, 'status']);
 
 		// users
 		$r->get('/users', [UserController::class, 'index'], [Permission::with('users.view')]);

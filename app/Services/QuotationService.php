@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Document;
-use App\Models\DocumentRepo;
-use App\Models\DocumentItemRepo;
 use App\Models\CustomerRepo;
+use App\Models\Document;
+use App\Models\DocumentItemRepo;
+use App\Models\DocumentRepo;
 use Core\Database;
 use RuntimeException;
 
-final class DocumentService
+final class QuotationService
 {
 	public function __construct(
 		private readonly DocumentRepo $documentRepo,
@@ -33,7 +33,7 @@ final class DocumentService
 		$customer = $this->customerRepo->findById($document->customer_id);
 
 		return [
-			'document' => clone $document, // Can't easily attach to readonly properties without reflection, returning array is safer
+			'document' => clone $document,
 			'items' => $items,
 			'customer' => $customer
 		];
@@ -45,7 +45,6 @@ final class DocumentService
 	 */
 	public function createDocumentWithItems(array $docData, array $itemsData): Document
 	{
-		// Calculate totals just to be safe
 		$subtotal = 0.0;
 		foreach($itemsData as $item){
 			$subtotal += ($item['quantity'] * $item['unit_price']);
@@ -53,9 +52,8 @@ final class DocumentService
 
 		$discount = (float) ($docData['discount'] ?? 0);
 		$subtotalAfterDiscount = $subtotal - $discount;
-		$vatRate = (float) ($docData['vat_rate'] ?? 7.0); // usually 7% in TH
+		$vatRate = (float) ($docData['vat_rate'] ?? 7.0);
 		
-		// 0 for no vat, else calculate
 		$vat = $vatRate > 0 ? ($subtotalAfterDiscount * $vatRate / 100) : 0;
 		$grandTotal = $subtotalAfterDiscount + $vat;
 
@@ -63,10 +61,8 @@ final class DocumentService
 		$docData['vat'] = $vat;
 		$docData['grand_total'] = $grandTotal;
 
-		// Start Transaction
-		$this->db->beginTransaction();
-		
-		try {
+		// DB Transaction
+		return $this->db->transaction(function() use($docData, $itemsData){
 			if(empty($docData['document_no'])){
 				$docData['document_no'] = $this->generateDocumentNo($docData['type']);
 			}
@@ -79,20 +75,15 @@ final class DocumentService
 				$this->itemRepo->create($item);
 			}
 
-			$this->db->commit();
 			return $document;
-			
-		} catch (\Throwable $e) {
-			$this->db->rollBack();
-			throw $e;
-		}
+		});
 	}
 
 	public function generateDocumentNo(string $type): string
 	{
 		$prefix = match($type){
 			'quotation' => 'QU',
-			'delivery' => 'DO',
+			// 'delivery' => 'DO',
 			'invoice' => 'INV',
 			default => 'DOC'
 		};
@@ -116,5 +107,20 @@ final class DocumentService
 		$newNumber = str_pad((string) ($lastNumber + 1), 3, '0', STR_PAD_LEFT);
 
 		return "{$prefix}-{$yearMonth}-{$newNumber}";
+	}
+
+	public function updateStatus(int $id, string $newStatus): void
+	{
+		$document = $this->documentRepo->findById($id);
+		if($document === null){
+				throw new RuntimeException('Document not found');
+		}
+
+		$validStatuses = ['draft', 'issued', 'accepted', 'cancelled'];
+		if(!in_array($newStatus, $validStatuses)){
+				throw new \InvalidArgumentException('Invalid status');
+		}
+
+		$this->documentRepo->updateStatus($id, $newStatus);
 	}
 }

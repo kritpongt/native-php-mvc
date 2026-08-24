@@ -1,0 +1,27 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% block main %}
+	<div class="max-w-4xl mx-auto space-y-6">
+		<!-- Page Header -->
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-xl font-semibold text-fg">Create Quotation</h1>
+				<p class="text-sm text-fg-secondary">Fill in the details to create a new.</p>
+			</div>
+			<a href="{{ url('/backoffice/quotation') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-1 transition-colors"
+				hx-get="{{ url('/backoffice/quotation') }}"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-push-url="true">
+				{{ icon.use('back') }}
+				Back
+			</a>
+		</div>
+
+		<!-- Form -->
+		{% include 'partials/backoffice/quotation/_form.html.twig' with {
+			'action_url': url('/backoffice/quotation'),
+			'customers': customers
+		} %}
+	</div>
+{% endblock %}

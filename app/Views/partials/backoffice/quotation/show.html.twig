@@ -1,0 +1,79 @@
+{% block main %}
+	<div class="max-w-4xl mx-auto bg-surface-1 p-8 border border-line rounded-lg my-6 shadow-sm print:shadow-none print:border-none print:m-0 print:p-0 text-fg">
+		<div class="flex justify-between items-start mb-12">
+			<div>
+				<h1 class="text-4xl font-bold uppercase tracking-widest text-fg">{{ document.type }}</h1>
+				<p class="text-fg-secondary mt-4 text-lg"><strong class="text-fg">No:</strong> {{ document.document_no }}</p>
+				<p class="text-fg-secondary"><strong class="text-fg">Date:</strong> {{ document.issue_date }}</p>
+				{% if document.due_date %}
+				<p class="text-fg-secondary"><strong class="text-fg">Due Date:</strong> {{ document.due_date }}</p>
+				{% endif %}
+			</div>
+			<button onclick="window.print()" class="print:hidden inline-flex items-center rounded-md border border-line bg-surface-1 px-4 py-2 text-sm font-medium text-fg hover:bg-surface-2 transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+				Print Document
+			</button>
+		</div>
+
+		<div class="mb-12">
+			<h2 class="text-lg font-bold border-b border-line pb-2 mb-4 text-fg">Bill To</h2>
+			<p class="font-medium text-lg text-fg">{{ customer.name }}</p>
+			{% if customer.address %}<p class="text-fg-secondary mt-1">{{ customer.address }}</p>{% endif %}
+			{% if customer.tax_id %}<p class="text-fg-secondary mt-1">Tax ID: {{ customer.tax_id }}</p>{% endif %}
+			{% if customer.phone %}<p class="text-fg-secondary mt-1">Tel: {{ customer.phone }}</p>{% endif %}
+		</div>
+
+		<table class="min-w-full border-collapse mb-12">
+			<thead>
+				<tr class="border-b-2 border-line">
+					<th class="py-3 text-left font-bold text-fg">Description</th>
+					<th class="py-3 text-right font-bold text-fg">Qty</th>
+					<th class="py-3 text-right font-bold text-fg">Unit Price</th>
+					<th class="py-3 text-right font-bold text-fg">Total</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-line">
+				{% for item in items %}
+				<tr>
+					<td class="py-4 text-fg">{{ item.name }}</td>
+					<td class="py-4 text-right text-fg-secondary">{{ item.quantity }}</td>
+					<td class="py-4 text-right text-fg-secondary">{{ item.unit_price|number_format(2) }}</td>
+					<td class="py-4 text-right text-fg">{{ item.total_price|number_format(2) }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<div class="w-full sm:w-1/2 ml-auto">
+			<div class="flex justify-between py-2 text-fg-secondary">
+				<span class="font-semibold text-fg">Subtotal</span>
+				<span>{{ document.subtotal|number_format(2) }}</span>
+			</div>
+			
+			{% if document.discount > 0 %}
+			<div class="flex justify-between py-2 text-red-500">
+				<span class="font-semibold">Discount</span>
+				<span>-{{ document.discount|number_format(2) }}</span>
+			</div>
+			{% endif %}
+			
+			{% if document.vat > 0 %}
+			<div class="flex justify-between py-2 text-fg-secondary">
+				<span class="font-semibold text-fg">VAT</span>
+				<span>{{ document.vat|number_format(2) }}</span>
+			</div>
+			{% endif %}
+			
+			<div class="flex justify-between py-4 mt-2 border-t-2 border-line text-xl font-bold text-fg">
+				<span>Grand Total</span>
+				<span>{{ document.grand_total|number_format(2) }}</span>
+			</div>
+		</div>
+		
+		{% if document.notes %}
+		<div class="mt-16 pt-8 border-t border-line">
+			<h3 class="text-sm font-bold text-fg-muted uppercase tracking-wider mb-2">Notes</h3>
+			<p class="text-fg-secondary whitespace-pre-wrap">{{ document.notes }}</p>
+		</div>
+		{% endif %}
+	</div>
+{% endblock %}

@@ -6,6 +6,9 @@
 	{% set active = block('nav_active') %}
 	{% set nav = [
 		{ key: 'dashboard', label: t('backoffice.nav.dashboard'), href: url('/backoffice') },
+		{ key: 'quotation', label: 'Quotation', href: url('/backoffice/quotation') },
+		{ key: 'billing-invoice', label: 'Billing / Invoice', href: url('/backoffice/billing-invoice') },
+		{ key: 'payment-receipt', label: 'Payment / Receipt', href: url('/backoffice/payment-receipt') },
 		{ key: 'users', label: t('backoffice.nav.users'), href: url('/backoffice/users') },
 		{ key: 'rbac', label: t('backoffice.nav.rbac'), href: url('/backoffice/roles') },
 		{ key: 'audit', label: t('backoffice.nav.audit'), href: url('/backoffice/audit') },
