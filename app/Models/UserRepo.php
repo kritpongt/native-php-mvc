@@ -166,7 +166,7 @@ class UserRepo
 		}
 
 		$userIds = array_column($rows, 'id');
-		$placeholders = implode(',', array_fill(0, count($userIds), '?')); // e.g. [?, ?, ?]
+		$placeholders = implode(',', array_fill(0, count($userIds), '?')); // e.g., [?, ?, ?]
 
 		$roleRows = $this->db->select("SELECT ur.user_id, r.name as role_name 
 			FROM user_roles ur 
