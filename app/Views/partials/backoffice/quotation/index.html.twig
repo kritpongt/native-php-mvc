@@ -56,8 +56,7 @@
 									hx-push-url="true">
 									{{ icon.use('edit') }}
 								</a>
-								<select name="status"
-									class="rounded-md border px-2 py-1 text-xs"
+								<select name="status" class="rounded-md border px-2 py-1 text-xs"
 									hx-post="{{ url('/backoffice/quotation/' ~ doc.id ~ '/status') }}">
 									<option value="" disabled selected>Change Status</option>
 									{% for s in statuses %}
@@ -68,7 +67,8 @@
 												data-dialog-confirm="{{ t('backoffice.quotation.change_status') }}"
 												data-dialog-theme="danger"
 											{% endif %}
-											{% if s === doc.status %}disabled{% endif %}>{{ s|capitalize }}</option>
+											{% if s === doc.status %}disabled{% endif %}>{{ s|capitalize }}
+										</option>
 									{% endfor %}
 								</select>
 								<a href="{{ url('/backoffice/quotation/' ~ doc.id) }}" 
