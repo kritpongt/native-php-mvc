@@ -12,6 +12,7 @@
 	<title>{% block title %}native-php-mvc{% endblock %}</title>
 	<link rel="stylesheet" href="/assets/css/tailwind.css">
 	<link rel="stylesheet" href="/assets/css/htmx.css">
+	<link rel="stylesheet" href="/assets/vendor/flatpickr.min.css">
 </head>
 {# hx-headers on <body> = inherited by every htmx element inside #}
 <body class="bg-surface-0 text-fg" hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
@@ -21,6 +22,8 @@
 	<script src="/assets/js/theme.js"></script>
 	<script src="/assets/vendor/htmx.min.js"></script>
 	<script src="/assets/vendor/sortable.min.js"></script>
+	<script src="/assets/vendor/flatpickr.min.js"></script>
+	<script src="/assets/vendor/flatpickr-th.js"></script>
 	<script type="module" src="/assets/js/app.js"></script>
 </body>
 </html>
