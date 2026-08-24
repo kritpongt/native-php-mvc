@@ -36,6 +36,13 @@ final class Request
 				$method = $override;
 			}
 		}
+		$body = $_POST;
+
+		if(isset($_SERVER['CONTENT_TYPE']) && str_contains($_SERVER['CONTENT_TYPE'], 'application/json')){
+			$input = file_get_contents('php://input');
+			// parse json string into array, fallback to empty array
+			$body = json_decode($input, true) ?? [];
+		}
 
 		// strip query string: /users?page=2 -> /users
 		$uri = $_SERVER['REQUEST_URI'] ?? '/';
@@ -45,7 +52,7 @@ final class Request
 			method: $method,
 			path: $path,
 			query: $_GET,
-			body: $_POST,
+			body: $body,
 			headers: self::collectHeaders(),
 			cookies: $_COOKIE,
 			ip: $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0' // *REMOTE_ADDR* only - X-Forwarded-For is client-controlled, spoofable

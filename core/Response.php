@@ -24,6 +24,11 @@ final class Response
 		return new self($body, $status, ['Content-Type' => 'text/html; charset=UTF-8']);
 	}
 
+	public static function json(array $data, int $status = 200): self
+	{
+		return new self((string) json_encode($data), $status, ['Content-Type' => 'application/json; charset=UTF-8']);
+	}
+
 	/**
 	 * 303 = "See Other": after POST, browser MUST switch to GET.
 	 * Stops the "resubmit form?" popup on refresh (PRG pattern).

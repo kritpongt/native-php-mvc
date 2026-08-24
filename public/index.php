@@ -92,21 +92,27 @@ $container->singleton(ClientContextInterface::class, static function(Container $
 $router = new Router($container);
 (require $root.'/app/Routes/web.php')($router);
 (require $root.'/app/Routes/backoffice.php')($router);
+(require $root.'/app/Routes/api.php')($router);
 
 $request = Request::fromGlobals();
 
-// ## ORDER MATTERS:
-// SecurityHeaders outermost = every response gets stamped,
-// HandleErrors next = catches everything inside it,
-// StartSession before VerifyCsrf = token lives in the session
-$global = [
-	SecurityHeaders::class,
-	HandleErrors::class,
-	StartSession::class,
-	ResolveLocale::class,
-	ShareViewData::class,
-	VerifyCsrf::class
-];
+$isApi = preg_match('#^/(?:[a-z]{2}/)?api(?:/|$)#i', $request->path()) === 1;;
+if($isApi){
+	$global = [];
+}else{
+	// ## ORDER MATTERS:
+	// SecurityHeaders outermost = every response gets stamped,
+	// HandleErrors next = catches everything inside it,
+	// StartSession before VerifyCsrf = token lives in the session
+	$global = [
+		SecurityHeaders::class,
+		HandleErrors::class,
+		StartSession::class,
+		ResolveLocale::class,
+		ShareViewData::class,
+		VerifyCsrf::class
+	];
+}
 
 // ## global pipeline
 $response = (new Pipeline($container))->send(
