@@ -16,13 +16,14 @@ final class QuotationService
 		private readonly DocumentRepo $documentRepo,
 		private readonly DocumentItemRepo $itemRepo,
 		private readonly CustomerRepo $customerRepo,
+		private readonly InvoiceService $invoiceService,
 		private readonly Database $db
 	){}
 
 	/**
 	 * @return array{document: Document, items: list<\App\Models\DocumentItem>, customer: \App\Models\Customer|null}
 	 */
-	public function getDocumentDetails(int $id): array
+	public function getDetails(int $id): array
 	{
 		$document = $this->documentRepo->findById($id);
 		if($document === null){
@@ -43,7 +44,7 @@ final class QuotationService
 	 * @param array<string, mixed> $docData
 	 * @param list<array<string, mixed>> $itemsData
 	 */
-	public function createDocumentWithItems(array $docData, array $itemsData): Document
+	public function createQuotationWithItems(array $docData, array $itemsData): Document
 	{
 		$subtotal = 0.0;
 		foreach($itemsData as $item){
@@ -64,7 +65,7 @@ final class QuotationService
 		// DB Transaction
 		return $this->db->transaction(function() use($docData, $itemsData){
 			if(empty($docData['document_no'])){
-				$docData['document_no'] = $this->generateDocumentNo($docData['type']);
+				$docData['document_no'] = $this->documentRepo->generateNo($docData['type']);
 			}
 
 			$document = $this->documentRepo->create($docData);
@@ -79,48 +80,37 @@ final class QuotationService
 		});
 	}
 
-	public function generateDocumentNo(string $type): string
-	{
-		$prefix = match($type){
-			'quotation' => 'QU',
-			// 'delivery' => 'DO',
-			'invoice' => 'INV',
-			default => 'DOC'
-		};
-
-		$yearMonth = date('Ym'); // e.g., 202608
-		$searchPrefix = "{$prefix}-{$yearMonth}-%";
-
-		// Find the latest document number for this month
-		$row = $this->db->selectOne(
-			'SELECT document_no FROM documents WHERE document_no LIKE :prefix ORDER BY id DESC LIMIT 1',
-			['prefix' => $searchPrefix]
-		);
-
-		if($row === null){
-			return "{$prefix}-{$yearMonth}-001";
-		}
-
-		// Example: QU-202608-001 -> Extract '001' and increment
-		$parts = explode('-', (string) $row['document_no']);
-		$lastNumber = (int) end($parts);
-		$newNumber = str_pad((string) ($lastNumber + 1), 3, '0', STR_PAD_LEFT);
-
-		return "{$prefix}-{$yearMonth}-{$newNumber}";
-	}
-
 	public function updateStatus(int $id, string $newStatus): void
 	{
 		$document = $this->documentRepo->findById($id);
-		if($document === null){
-				throw new RuntimeException('Document not found');
+		if($document === null || $document->type !== 'quotation'){
+			throw new RuntimeException('Quotation not found');
 		}
 
-		$validStatuses = ['draft', 'issued', 'accepted', 'cancelled'];
-		if(!in_array($newStatus, $validStatuses)){
-				throw new \InvalidArgumentException('Invalid status');
+		if(!in_array($newStatus, Document::STATUSES)){
+			throw new \InvalidArgumentException('Invalid status');
+		}
+
+		// state transitions
+		$validTransitions = [
+			'draft' => ['issued', 'approved', 'cancelled'],
+			'issued' => ['draft', 'approved', 'cancelled'],
+			// final state: can't change
+			'approved' => [],
+			'cancelled' => [],
+		];
+
+		$currentStatus = $document->status;
+		if($currentStatus === $newStatus){ return; }
+
+		if(!in_array($newStatus, $validTransitions[$currentStatus] ?? [])){
+			throw new RuntimeException("Cannot change status from '{$currentStatus}' to '{$newStatus}'");
 		}
 
 		$this->documentRepo->updateStatus($id, $newStatus);
+
+		if($newStatus === 'approved'){
+			$this->invoiceService->createFromQuotation($id);
+		}
 	}
 }

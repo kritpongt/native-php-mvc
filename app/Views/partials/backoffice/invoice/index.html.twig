@@ -8,14 +8,6 @@
 				<h1 class="text-xl font-semibold text-fg">{{ type|capitalize }}s</h1>
 				<p class="text-sm text-fg-secondary">Manage and view all your {{ type }}s.</p>
 			</div>
-			<a href="{{ url('/backoffice/quotation/create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-fg hover:opacity-90 transition-opacity"
-				hx-get="{{ url('/backoffice/quotation/create') }}"
-				hx-target="#main-content"
-				hx-swap="innerHTML"
-				hx-push-url="true">
-				{{ icon.use('plus') }}
-				Create Quotation
-			</a>
 		</div>
 
 		{# Data Table #}
@@ -49,31 +41,24 @@
 						</td>
 						<td class="px-4 py-3 text-right">
 							<div class="flex items-center justify-end gap-2">
-								<a href="{{ url('/backoffice/quotation/' ~ doc.id ~ '/edit') }}" 
-									class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="Edit"
-									hx-get="{{ url('/backoffice/quotation/' ~ doc.id ~ '/edit') }}"
-									hx-target="#main-content"
-									hx-push-url="true">
-									{{ icon.use('edit') }}
-								</a>
 								<select name="status" class="rounded-md border px-2 py-1 text-xs"
-									hx-post="{{ url('/backoffice/quotation/' ~ doc.id ~ '/status') }}">
+									hx-post="{{ url('/backoffice/invoice/' ~ doc.id ~ '/status') }}">
 									<option value="" disabled selected>Change Status</option>
 									{% for s in statuses %}
 										<option value="{{ s }}"
-											{% if s == 'approved' %}
-												data-dialog-confirm="{{ t('backoffice.quotation.change_status') }}"
+											{% if s == 'paid' %}
+												data-dialog-confirm="{{ t('backoffice.invoice.change_status') }}"
 											{% elseif s == 'cancelled' %}
-												data-dialog-confirm="{{ t('backoffice.quotation.change_status') }}"
+												data-dialog-confirm="{{ t('backoffice.invoice.change_status') }}"
 												data-dialog-theme="danger"
 											{% endif %}
 											{% if s === doc.status %}disabled{% endif %}>{{ s|capitalize }}
 										</option>
 									{% endfor %}
 								</select>
-								<a href="{{ url('/backoffice/quotation/' ~ doc.id) }}" 
+								<a href="{{ url('/backoffice/invoice/' ~ doc.id) }}" 
 									class="p-1.5 text-fg-secondary hover:text-fg hover:bg-surface-1 rounded-lg transition-colors" title="View"
-									hx-get="{{ url('/backoffice/quotation/' ~ doc.id) }}"
+									hx-get="{{ url('/backoffice/invoice/' ~ doc.id) }}"
 									hx-target="#main-content"
 									hx-push-url="true">
 									{{ icon.use('eye') }}

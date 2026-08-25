@@ -7,6 +7,9 @@ return [
 	'logout' => 'ออกจากระบบ',
 	'nav' => [
 		'dashboard' => 'แดชบอร์ด',
+		'quotation' => 'ใบเสนอราคา',
+		'billing_invoice' => 'ใบแจ้งหนี้',
+		'payment_receipt' => 'Payment/Receipt',
 		'users' => 'ผู้ใช้งาน',
 		'rbac' => 'สิทธิ์การใช้งาน',
 		'audit' => 'Audit log',

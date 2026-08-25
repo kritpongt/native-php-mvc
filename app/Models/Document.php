@@ -5,6 +5,9 @@ namespace App\Models;
 
 final class Document
 {
+	public const STATUSES = ['draft', 'issued', 'approved', 'cancelled'];
+	public const INV_STATUSES = ['draft', 'unpaid', 'paid', 'cancelled'];
+
 	public function __construct(
 		public readonly int $id,
 		public readonly string $document_no,

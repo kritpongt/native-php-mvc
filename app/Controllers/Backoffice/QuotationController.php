@@ -26,6 +26,7 @@ final class QuotationController
 		
 		$data = [
 			'documents' => $documents,
+			'statuses' => \App\Models\Document::STATUSES,
 			'type' => $type
 		];
 
@@ -97,7 +98,7 @@ final class QuotationController
 			}
 		}
 
-		$this->quotationService->createDocumentWithItems($quotationData, $itemsData);
+		$this->quotationService->createQuotationWithItems($quotationData, $itemsData);
 
 		return $request->isHtmx()
 			? (new Response('', 204))->withHeader('HX-Location', '{"path": "/backoffice/quotation", "target": "#main-content"}')
@@ -107,7 +108,7 @@ final class QuotationController
 	public function show(Request $request, string $id): Response
 	{
 		$docId = (int) $id;
-		$details = $this->quotationService->getDocumentDetails($docId);
+		$details = $this->quotationService->getDetails($docId);
 
 		if($request->isHtmx()){
 			return Response::html($this->view->renderPartial('backoffice/quotation/show', $details));

@@ -15,6 +15,12 @@ class DocumentRepo
 		return $row === null ? null : $this->map($row);
 	}
 
+	public function findByReferenceId(int $id): ?Document
+	{
+		$row = $this->db->selectOne('SELECT * FROM documents WHERE reference_id = :reference_id', ['reference_id' => $id]);
+		return $row === null ? null : $this->map($row);
+	}
+
 	/** @return list<Document> */
 	public function findByType(string $type): array
 	{
@@ -58,6 +64,50 @@ class DocumentRepo
 		);
 
 		return clone $this->findById((int) $this->db->lastInsertId());
+	}
+
+	public function updateStatus(int $id, string $status): void
+	{
+		$now = date('Y-m-d H:i:s');
+
+		$this->db->execute(
+			'UPDATE documents SET status = :status, updated_at = :updated_at WHERE id = :id',
+			[
+				'id' => $id,
+				'status' => $status,
+				'updated_at' => $now
+			]
+		);
+	}
+
+	public function generateNo(string $type): string
+	{
+		$prefix = match($type){
+			'quotation' => 'QU',
+			// 'delivery' => 'DO',
+			'invoice' => 'INV',
+			default => 'DOC'
+		};
+
+		$yearMonth = date('Ym'); // e.g., 202608
+		$searchPrefix = "{$prefix}-{$yearMonth}-%";
+
+		// Find the latest document number for this month
+		$row = $this->db->selectOne(
+			'SELECT document_no FROM documents WHERE document_no LIKE :prefix ORDER BY id DESC LIMIT 1',
+			['prefix' => $searchPrefix]
+		);
+
+		if($row === null){
+			return "{$prefix}-{$yearMonth}-001";
+		}
+
+		// Example: QU-202608-001 -> Extract '001' and increment
+		$parts = explode('-', (string) $row['document_no']);
+		$lastNumber = (int) end($parts);
+		$newNumber = str_pad((string) ($lastNumber + 1), 3, '0', STR_PAD_LEFT);
+
+		return "{$prefix}-{$yearMonth}-{$newNumber}";
 	}
 
 	/** @param array<string, mixed> $row */
