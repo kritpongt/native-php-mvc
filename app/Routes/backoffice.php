@@ -8,6 +8,7 @@ use App\Controllers\Backoffice\RoleController;
 use App\Controllers\Backoffice\UserController;
 use App\Controllers\Backoffice\QuotationController;
 use App\Controllers\Backoffice\InvoiceController;
+use App\Controllers\Backoffice\WorkAcceptanceFormController;
 use App\Middlewares\Auth;
 use App\Middlewares\Guest;
 use App\Middlewares\Permission;
@@ -29,13 +30,21 @@ return static function(Router $router): void{
 		$r->get('/quotation', [QuotationController::class, 'index']);
 		$r->get('/quotation/create', [QuotationController::class, 'create']);
 		$r->get('/quotation/{id}', [QuotationController::class, 'show']);
+		$r->get('/quotation/{id}/edit', [QuotationController::class, 'edit']);
+		$r->get('/quotation/{id}/pdf', [QuotationController::class, 'streamPdf']);
 		$r->post('/quotation', [QuotationController::class, 'store']);
 		$r->post('/quotation/{id}/update', [QuotationController::class, 'update']);
 		$r->post('/quotation/{id}/status', [QuotationController::class, 'status']);
 
+		// work acceptance form
+		$r->get('/work-acceptance-form', [WorkAcceptanceFormController::class, 'index']);
+		$r->get('/work-acceptance-form/{id}', [WorkAcceptanceFormController::class, 'show']);
+		$r->get('/work-acceptance-form/{id}/pdf', [WorkAcceptanceFormController::class, 'streamPdf']);
+
 		// invoice
 		$r->get('/invoice', [InvoiceController::class, 'index']);
 		$r->get('/invoice/{id}', [InvoiceController::class, 'show']);
+		$r->get('/invoice/{id}/pdf', [InvoiceController::class, 'streamPdf']);
 		$r->post('/invoice/{id}/status', [InvoiceController::class, 'status']);
 
 		// users

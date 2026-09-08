@@ -8,6 +8,7 @@ return [
 	'nav' => [
 		'dashboard' => 'แดชบอร์ด',
 		'quotation' => 'ใบเสนอราคา',
+		'work_acceptance_form' => 'ใบมอบงาน',
 		'billing_invoice' => 'ใบแจ้งหนี้',
 		'payment_receipt' => 'Payment/Receipt',
 		'users' => 'ผู้ใช้งาน',

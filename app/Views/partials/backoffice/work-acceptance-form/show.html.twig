@@ -1,0 +1,32 @@
+{% import "components/icon_macro.html.twig" as icon %}
+
+{% block main %}
+	<div class="mx-auto space-y-6">
+		<!-- Page Header -->
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-xl font-semibold text-fg">{{ t('backoffice.work-acceptance-form.show_title') }}</h1>
+				<p class="text-sm text-fg-secondary">{{ t('backoffice.work-acceptance-form.show_subtitle') }}</p>
+			</div>
+			<a href="{{ url('/backoffice/work-acceptance-form') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-1 transition-colors"
+				hx-get="{{ url('/backoffice/work-acceptance-form') }}"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-push-url="true">
+				{{ icon.use('back') }}
+				{{ t('backoffice.common.back') }}
+			</a>
+		</div>
+
+		<!-- Show PDF -->
+		<div class="w-full h-[800px] border border-line rounded-lg overflow-hidden bg-white">
+			<object data="{{ url('/backoffice/work-acceptance-form/' ~ document.id ~ '/pdf') }}" type="application/pdf" width="100%" height="100%">
+				<iframe src="{{ url('/backoffice/work-acceptance-form/' ~ document.id ~ '/pdf') }}" width="100%" height="100%">
+					<p class="p-4">Your browser does not support PDFs. 
+						<a href="{{ url('/backoffice/work-acceptance-form/' ~ document.id ~ '/pdf') }}" class="text-blue-500 hover:underline">Download the PDF</a>.
+					</p>
+				</iframe>
+			</object>
+		</div>
+	</div>
+{% endblock %}
