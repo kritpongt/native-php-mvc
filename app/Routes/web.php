@@ -6,5 +6,5 @@ use Core\Router;
 
 return static function(Router $router): void{
 	$router->get('/', [HomeController::class, 'index']);
-	// $router->post('/greet', [HomeController::class, 'greet']);
+	$router->get('/greet', [HomeController::class, 'greet']);
 };
