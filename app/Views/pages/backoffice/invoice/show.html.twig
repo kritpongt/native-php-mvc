@@ -1,6 +1,8 @@
 {% extends 'layouts/backoffice.html.twig' %}
+
 {% block title %}{{ document.document_no }} - Backoffice{% endblock %}
 {% block nav_active %}invoice{% endblock %}
+
 {% block main %}
     {% include "partials/backoffice/invoice/show.html.twig" %}
 {% endblock %}

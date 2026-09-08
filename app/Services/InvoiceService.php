@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\CustomerRepo;
 use App\Models\Document;
 use App\Models\DocumentItemRepo;
 use App\Models\DocumentRepo;
+use App\Utils\NumberHelper;
 use Core\Database;
 use RuntimeException;
 
@@ -15,7 +17,26 @@ final class InvoiceService
 		private readonly Database $db,
 		private readonly DocumentRepo $documentRepo,
 		private readonly DocumentItemRepo $itemRepo,
+		private readonly CustomerRepo $customerRepo,
 	){}
+
+	public function getDetails(int $id): array
+	{
+		$document = $this->documentRepo->findByIdAndType($id, 'invoice');
+		if($document === null){
+			throw new RuntimeException('Invoice not found');
+		}
+
+		$items = $this->itemRepo->findByDocumentId($id);
+		$customer = $this->customerRepo->findById($document->customer_id);
+
+		return [
+			'document' => clone $document,
+			'items' => $items,
+			'baht_text' => NumberHelper::bahtText($document->grand_total),
+			'customer' => $customer
+		];
+	}
 
 	public function createFromQuotation(int $quotationId): Document
 	{

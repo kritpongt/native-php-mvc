@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale }}">
+<head>
+	<meta charset="UTF-8">
+	<title>PDF - Invoice</title>
+	<style>
+		@font-face {
+			font-family: 'Sarabun';
+			font-style: normal;
+			font-weight: normal;
+			src: url('{{ font_reg_base64 }}') format('truetype');
+		}
+		@font-face {
+			font-family: 'Sarabun';
+			font-style: normal;
+			font-weight: bold;
+			src: url('{{ font_bold_base64 }}') format('truetype');
+		}
+		body {
+			font-family: 'Sarabun', sans-serif;
+		}
+		.border {
+			border: 1px solid #ddd; 
+		}
+		.border-table {
+			border: 1px solid #242424; 
+		}
+		.bg-table1 {
+			background-color: #f8f9fa;
+		}
+		.bg-table2 {
+			background-color: #f0f2f4;
+		}
+		.padding {
+			padding: 10px 4px 10px 0;
+		}
+	</style>
+</head>
+<body>
+	{# Company Info #}
+	<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+		<div>
+			<strong>{{ company.name|default('[Company Name]') }}</strong><br>
+			<span>{{ company.address|default('[Company Address]') }}</span><br>
+			<span>{{ company.email|default('[Company Email]') }}</span> (<span>{{ company.phone|default('[Company Phone]') }}</span>)<br>
+			<span>Tax ID: {{ company.tax_no|default('[Company Tax ID]') }}</span>
+		</div>
+		<div style="display: flex; align-items: flex-start; justify-content: flex-end;">
+			<div style="border: 2px solid #242424; border-radius: 12px; padding: 15px 40px; text-align: center; font-size: 24px; font-weight: bold;">
+				Invoice
+			</div>
+		</div>
+	</div>
+
+	{# Customer Info #}
+	<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+		<div>
+			<strong>{{ customer.name|default('[Customer Name]') }}</strong><br>
+			<span>{{ customer.address|default('[Customer Address]') }}</span><br>
+			<span>{{ customer.email|default('[Customer Email]') }}</span> (<span>{{ customer.phone|default('[Customer Phone]') }}</span>)<br>
+			<span>Tax ID: {{ customer.tax_id|default('[Customer Tax ID]') }}</span>
+		</div>
+	</div>
+
+	{# Table #}
+	<table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
+		<colgroup>
+			<col style="width: 5%;">
+			<col style="width: 32%;">
+			<col style="width: 6%;">
+			<col style="width: 11%;">
+			<col style="width: 11%;">
+			<col style="width: 11%;">
+			<col style="width: 11%;">
+			<col style="width: 13%;">
+		</colgroup>
+		<thead>
+			<tr>
+				<th colspan="8" class="border bg-table1" style="padding: 10px; text-align: left; font-weight: normal;">
+					<strong>โครงการ:</strong> {{ document.project_name|default('[Project Name]') }}
+				</th>
+			</tr>
+			<tr class="bg-table2">
+				<th class="border" rowspan="2" style="text-align: center;">ลำดับ</th>
+				<th class="border" rowspan="2" style="text-align: center;">รายการ</th>
+				<th class="border" rowspan="2" style="text-align: center;">จำนวน</th>
+				<th class="border" colspan="2" style="text-align: center;">วัสดุ</th>
+				<th class="border" colspan="2" style="text-align: center;">ค่าแรง</th>
+				<th class="border" rowspan="2" style="padding: 0 10px; text-align: right;">จำนวนเงิน</th>
+			</tr>
+			<tr class="bg-table2">
+				<th class="border" style="text-align: center;">ราคา/หน่วย</th>
+				<th class="border" style="text-align: center;">รวม</th>
+				<th class="border" style="text-align: center;">ราคา/หน่วย</th>
+				<th class="border" style="text-align: center;">รวม</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for index, item in items %}
+				<tr>
+					<td class="border padding" style="text-align: center;">{{ index + 1 }}</td>
+					<td class="border" style="padding: 10px;word-wrap: break-word; overflow-wrap: break-word;">{{ item.name }}</td>
+					<td class="border padding" style="text-align: center;">{{ item.quantity }}</td>
+					<td class="border padding" style="text-align: right;">{{ item.unit_price|number_format(2) }}</td>
+					<td class="border padding" style="text-align: right;">{{ (item.unit_price * item.quantity)|number_format(2) }}</td>
+					<td class="border padding" style="text-align: right;">{{ item.labor_price|number_format(2) }}</td>
+					<td class="border padding" style="text-align: right;">{{ (item.labor_price * item.quantity)|number_format(2) }}</td>
+					<td class="border padding" style="text-align: right;">{{ item.total_price|number_format(2) }}</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="5" class="border" style="padding: 10px; text-align: center;">-- ไม่มีรายการ --</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+
+		<tbody class="border" style="break-inside: avoid; page-break-inside: avoid;">
+			<tr>
+				<td colspan="5" style="padding: 8px;"></td>
+				<td colspan="2" class="border" style="padding: 4px 10px; text-align: right; font-weight: bold;">รวมเป็นเงิน</td>
+				<td class="border padding" style="text-align: right;">{{ document.subtotal|number_format(2) }}</td>
+			</tr>
+			{% if document.discount > 0 %}
+				<tr>
+					<td colspan="5" style="padding: 8px;"></td>
+					<td colspan="2" class="border" style="padding: 4px 10px; text-align: right; font-weight: bold;">ส่วนลด</td>
+					<td class="border padding" style="text-align: right; color: red;">-{{ document.discount|number_format(2) }}</td>
+				</tr>
+			{% endif %}
+			<tr>
+				<td colspan="5" style="padding: 8px;"></td>
+				<td colspan="2" class="border" style="padding: 4px 10px; text-align: right; font-weight: bold;">ค่าดำเนินการ</td>
+				<td class="border padding" style="text-align: right;">{{ 0|number_format(2) }}</td>
+			</tr>
+			<tr>
+				<td colspan="5" style="padding: 8px;"></td>
+				<td colspan="2" class="border" style="padding: 4px 10px; text-align: right; font-weight: bold;">ภาษีมูลค่าเพิ่ม (VAT)</td>
+				<td class="border padding" style="text-align: right;">{{ document.vat|number_format(2) }}</td>
+			</tr>
+			<tr class="bg-table1">
+		    <td colspan="5" style="padding: 8px; font-weight: bold;">จำนวนเงินทั้งสิ้น ({{ baht_text|default('') }}).</td>
+				<td colspan="2" class="border" style="padding: 8px 10px; text-align: right; font-weight: bold;">จำนวนเงินทั้งสิ้น</td>
+				<td class="border" style="padding: 8px 4px; text-align: right; font-weight: bold; border-bottom: 3px double #ddd;">{{ document.grand_total|number_format(2) }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	{# Signature #}
+	<div style="display: flex; justify-content: flex-end; margin-top: 40px; font-size: 12px;">
+		<div style="text-align: center; width: 250px;">
+			<p style="margin-bottom: 40px;">ขอแสดงความนับถือ</p>
+			<p style="margin: 0;">_________________________________________</p>
+			<p style="margin: 10px 0;">(......................................................)</p>
+			<p style="margin: 5px 0;">ผู้มีอำนาจลงนาม / Authorized Signature</p>
+			{# <p style="margin: 10px 0;">วันที่: ______/______/______</p> #}
+		</div>
+	</div>
+</body>
+</html>
