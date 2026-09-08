@@ -13,6 +13,8 @@ storage/**
 # tool caches
 .phpunit.result.cache
 
+/public/assets/imgs
+
 # architecture.md
 # CLAUDE.md
 # .agents/
