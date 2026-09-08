@@ -12,6 +12,15 @@ stateDiagram-v2
 		SentQ --> DraftQ: ลูกค้าขอแก้ไข (Revise)
 	}
 
+	DraftQ --> WAF
+
+	%% Work Acceptance Form
+	state "Work Acceptance Form" as WAF {
+		ShowWAF: แสดงใบตรวจรับงาน
+		PrintWAF: Print PDF
+		ShowWAF --> PrintWAF
+	}
+
 	%% Billing Phase
 	state "2. Billing Phase" as BPhase {
 		CreateInv: 🔄 แปลงข้อมูลสร้าง ใบวางบิล/ใบแจ้งหนี้

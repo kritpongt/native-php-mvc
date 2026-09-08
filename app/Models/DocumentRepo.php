@@ -32,6 +32,18 @@ class DocumentRepo
 		return array_map($this->map(...), $rows);
 	}
 
+	public function findByIdAndType(int $id, string $type): ?Document
+	{
+		$row = $this->db->selectOne(
+			'SELECT * FROM documents WHERE id = :id AND type = :type',
+			[
+				'id' => $id,
+				'type' => $type
+			]
+		);
+		return $row === null ? null : $this->map($row);
+	}
+
 	/** @param array<string, mixed> $data */
 	public function create(array $data): Document
 	{
@@ -40,10 +52,10 @@ class DocumentRepo
 		$this->db->execute(
 			'INSERT INTO documents(
 				document_no, customer_id, type, status, issue_date, due_date, reference_id, 
-				subtotal, discount, vat, grand_total, notes, created_at, updated_at
+				subtotal, discount, vat, grand_total, title, notes, created_at, updated_at
 			) VALUES (
 				:document_no, :customer_id, :type, :status, :issue_date, :due_date, :reference_id, 
-				:subtotal, :discount, :vat, :grand_total, :notes, :created_at, :updated_at
+				:subtotal, :discount, :vat, :grand_total, :title, :notes, :created_at, :updated_at
 			)',
 			[
 				'document_no' => $data['document_no'],
@@ -57,6 +69,7 @@ class DocumentRepo
 				'discount' => $data['discount'] ?? 0.00,
 				'vat' => $data['vat'] ?? 0.00,
 				'grand_total' => $data['grand_total'] ?? 0.00,
+				'title' => $data['title'] ?? null,
 				'notes' => $data['notes'] ?? null,
 				'created_at' => $now,
 				'updated_at' => $now
@@ -76,6 +89,38 @@ class DocumentRepo
 				'id' => $id,
 				'status' => $status,
 				'updated_at' => $now
+			]
+		);
+	}
+
+	public function update(int $id, array $data): void
+	{
+		$now = date('Y-m-d H:i:s');
+		$this->db->execute(
+			'UPDATE documents SET
+				customer_id = :customer_id,
+				issue_date = :issue_date,
+				due_date = :due_date,
+				discount = :discount,
+				vat = :vat,
+				subtotal = :subtotal,
+				grand_total = :grand_total,
+				title = :title,
+				notes = :notes,
+				updated_at = :updated_at 
+			WHERE id = :id',
+			[
+				'id' => $id,
+				'customer_id' => $data['customer_id'],
+				'issue_date' => $data['issue_date'],
+				'due_date' => $data['due_date'] ?? null,
+				'discount' => $data['discount'] ?? 0.00,
+				'vat' => $data['vat'] ?? 0.00,
+				'subtotal' => $data['subtotal'] ?? 0.00,
+				'grand_total' => $data['grand_total'] ?? 0.00,
+				'title' => $data['title'] ?? null,
+				'notes' => $data['notes'] ?? null,
+				'updated_at' => $now,
 			]
 		);
 	}
@@ -126,6 +171,7 @@ class DocumentRepo
 			discount: (float) $row['discount'],
 			vat: (float) $row['vat'],
 			grand_total: (float) $row['grand_total'],
+			title: $row['title'] !== null ? (string) $row['title'] : null,
 			notes: $row['notes'] !== null ? (string) $row['notes'] : null,
 			created_at: (string) $row['created_at'],
 			updated_at: (string) $row['updated_at']

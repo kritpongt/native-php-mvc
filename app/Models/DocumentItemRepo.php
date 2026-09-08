@@ -27,9 +27,9 @@ class DocumentItemRepo
 		
 		$this->db->execute(
 			'INSERT INTO document_items(
-				document_id, name, description, quantity, unit_price, total_price, created_at, updated_at
+				document_id, name, description, quantity, unit_price, labor_price, total_price, created_at, updated_at
 			) VALUES (
-				:document_id, :name, :description, :quantity, :unit_price, :total_price, :created_at, :updated_at
+				:document_id, :name, :description, :quantity, :unit_price, :labor_price, :total_price, :created_at, :updated_at
 			)',
 			[
 				'document_id' => $data['document_id'],
@@ -37,10 +37,19 @@ class DocumentItemRepo
 				'description' => $data['description'] ?? null,
 				'quantity' => $data['quantity'] ?? 1.00,
 				'unit_price' => $data['unit_price'] ?? 0.00,
+				'labor_price' => $data['labor_price'] ?? 0.00,
 				'total_price' => $data['total_price'] ?? 0.00,
 				'created_at' => $now,
 				'updated_at' => $now
 			]
+		);
+	}
+
+	public function deleteByDocumentId(int $documentId): void
+	{
+		$this->db->execute(
+			'DELETE FROM document_items WHERE document_id = :document_id',
+			['document_id' => $documentId]
 		);
 	}
 
@@ -50,10 +59,12 @@ class DocumentItemRepo
 		return new DocumentItem(
 			id: (int) $row['id'],
 			document_id: (int) $row['document_id'],
+			product_id: (int) $row['product_id'],
 			name: (string) $row['name'],
 			description: $row['description'] !== null ? (string) $row['description'] : null,
 			quantity: (float) $row['quantity'],
 			unit_price: (float) $row['unit_price'],
+			labor_price: (float) $row['labor_price'],
 			total_price: (float) $row['total_price'],
 			created_at: (string) $row['created_at'],
 			updated_at: (string) $row['updated_at']

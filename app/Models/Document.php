@@ -21,13 +21,15 @@ final class Document
 		public readonly float $discount,
 		public readonly float $vat,
 		public readonly float $grand_total,
+		public readonly ?string $title,
 		public readonly ?string $notes,
 		public readonly string $created_at = '',
 		public readonly string $updated_at = '',
 		
-		/** add-ons (populated by repository or service) */
-		public readonly ?Customer $customer = null,
-		/** @var list<DocumentItem>|null */
-		public readonly ?array $items = null
+		// /** add-ons (populated by repository or service) */
+		// public readonly ?Customer $customer = null,
+
+		// /** @var list<DocumentItem>|null */
+		// public readonly ?array $items = null
 	){}
 }
