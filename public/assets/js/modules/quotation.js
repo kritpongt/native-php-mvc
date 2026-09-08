@@ -7,6 +7,7 @@ document.addEventListener('click', (e) => {
     if (container && template) {
       const clone = template.content.cloneNode(true)
       container.appendChild(clone)
+      updateItemSequence()
     }
     return
   }
@@ -19,6 +20,7 @@ document.addEventListener('click', (e) => {
       // Ensure we don't delete the last row
       if (container.querySelectorAll('[data-quotation-row]').length > 1) {
         btnRemove.closest('[data-quotation-row]').remove()
+        updateItemSequence()
       }
     }
     return
@@ -79,7 +81,21 @@ document.addEventListener('htmx:load', (e) => {
     new Sortable(actualContainer, {
       animation: 150,
       handle: '[data-quotation-drag]',
-      ghostClass: 'opacity-50'
+      ghostClass: 'opacity-50',
+      onEnd: function () {
+        updateItemSequence()
+      }
     })
   }
 })
+
+function updateItemSequence() {
+  const container = document.querySelector('[data-quotation-items]')
+  if (!container) return
+
+  const numbers = container.querySelectorAll('[data-quotation-item-seq]')
+
+  numbers.forEach((el, index) => {
+    el.textContent = `${index + 1}.`
+  })
+}

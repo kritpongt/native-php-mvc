@@ -7,6 +7,7 @@ use App\Models\CustomerRepo;
 use App\Models\Document;
 use App\Models\DocumentItemRepo;
 use App\Models\DocumentRepo;
+use App\Utils\NumberHelper;
 use Core\Database;
 use RuntimeException;
 
@@ -27,7 +28,7 @@ final class QuotationService
 	{
 		$document = $this->documentRepo->findById($id);
 		if($document === null){
-			throw new RuntimeException('Document not found');
+			throw new RuntimeException('Quotation not found');
 		}
 
 		$items = $this->itemRepo->findByDocumentId($id);
@@ -36,7 +37,8 @@ final class QuotationService
 		return [
 			'document' => clone $document,
 			'items' => $items,
-			'customer' => $customer
+			'customer' => $customer,
+			'baht_text' => NumberHelper::bahtText($document->grand_total)
 		];
 	}
 
@@ -48,7 +50,8 @@ final class QuotationService
 	{
 		$subtotal = 0.0;
 		foreach($itemsData as $item){
-			$subtotal += ($item['quantity'] * $item['unit_price']);
+			$labor = (float) ($item['labor_price'] ?? 0);
+			$subtotal += ($item['quantity'] * ($item['unit_price'] + $labor));
 		}
 
 		$discount = (float) ($docData['discount'] ?? 0);
@@ -72,7 +75,8 @@ final class QuotationService
 
 			foreach($itemsData as $item){
 				$item['document_id'] = $document->id;
-				$item['total_price'] = $item['quantity'] * $item['unit_price'];
+				$item['labor_price'] = (float) ($item['labor_price'] ?? 0);
+				$item['total_price'] = $item['quantity'] * ($item['unit_price'] + $item['labor_price']);
 				$this->itemRepo->create($item);
 			}
 
@@ -112,5 +116,38 @@ final class QuotationService
 		if($newStatus === 'approved'){
 			$this->invoiceService->createFromQuotation($id);
 		}
+	}
+
+	public function updateQuotationWithItems(int $id, array $docData, array $itemsData): void
+	{
+		$subtotal = 0.0;
+		foreach($itemsData as $item){
+			$labor = (float) ($item['labor_price'] ?? 0);
+			$subtotal += ($item['quantity'] * ($item['unit_price'] + $labor));
+		}
+
+		$discount = (float) ($docData['discount'] ?? 0);
+		$subtotalAfterDiscount = $subtotal - $discount;
+		$vatRate = (float) ($docData['vat_rate'] ?? 7.0);
+
+		$vat = $vatRate > 0 ? ($subtotalAfterDiscount * $vatRate / 100) : 0;
+		$grandTotal = $subtotalAfterDiscount + $vat;
+
+		$docData['subtotal'] = $subtotal;
+		$docData['vat'] = $vat;
+		$docData['grand_total'] = $grandTotal;
+
+		$this->db->transaction(function() use($id, $docData, $itemsData){
+			$this->documentRepo->update($id, $docData);
+
+			$this->itemRepo->deleteByDocumentId($id);
+
+			foreach($itemsData as $item){
+				$item['document_id'] = $id;
+				$item['labor_price'] = (float) ($item['labor_price'] ?? 0);
+				$item['total_price'] = $item['quantity'] * ($item['unit_price'] + $item['labor_price']);
+				$this->itemRepo->create($item);
+			}
+		});
 	}
 }

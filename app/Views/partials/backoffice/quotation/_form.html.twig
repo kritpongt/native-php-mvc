@@ -6,14 +6,26 @@
 	<input type="hidden" name="_csrf" value="{{ csrf_token }}">
 	
 	<div>
+		<div class="grid grid-cols-1 gap-6">
+			<div>
+				<label class="block text-sm font-medium text-fg mb-1.5">Title</label>
+				<input type="text" name="title" value="{{ quotation.title ?? '' }}" placeholder="Quotation title"
+					class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+			</div>
+		</div>
+	</div>
+
+	<div>
 		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 			<div>
 				<div class="flex items-center justify-between mb-1.5">
 					<label class="block text-sm font-medium text-fg">Customer</label>
-					<label class="flex items-center gap-1.5 cursor-pointer">
-						<input type="checkbox" name="is_new_customer" value="1" class="w-4 h-4 rounded border border-line text-accent focus:ring-accent/20 cursor-pointer">
-						<span class="text-xs font-medium text-fg-secondary">New Customer</span>
-					</label>
+					{% if not is_edit %}
+						<label class="flex items-center gap-1.5 cursor-pointer">
+							<input type="checkbox" name="is_new_customer" value="1" class="w-4 h-4 rounded border border-line text-accent focus:ring-accent/20 cursor-pointer">
+							<span class="text-xs font-medium text-fg-secondary">New Customer</span>
+						</label>
+					{% endif %}
 				</div>
 				
 				<div id="existing_customer_container">
@@ -39,10 +51,6 @@
 				<div id="new_customer_container" class="space-y-3">
 					<div class="flex items-center justify-between mb-1.5">
 						<label class="block text-sm font-medium text-fg">New Customer Details</label>
-						<label class="flex items-center gap-1.5 cursor-pointer">
-							<input type="checkbox" name="save_new_customer" value="1" class="w-4 h-4 rounded border border-line text-accent focus:ring-accent/20 cursor-pointer">
-							<span class="text-xs font-medium text-fg-secondary">Save New Customer</span>
-						</label>
 					</div>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 						<input type="text" name="new_customer_name" placeholder="Customer Name *" 
@@ -73,22 +81,29 @@
 		</div>
 		
 		<div class="space-y-3" data-quotation-items>
-			{% if quotation is defined and quotation.items is defined and quotation.items|length > 0 %}
-				{% for item in quotation.items %}
+			{% if quotation is defined and items is defined and items|length > 0 %}
+				{% for item in items %}
 					<div data-quotation-row class="flex gap-3 items-center group bg-surface-2 p-2 rounded-lg border border-transparent">
-						<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
-							{{ icon.use('menu') }}
+						<div class="flex flex-col items-center justify-center min-w-[24px]">
+							<span data-quotation-item-seq class="text-[10px] leading-none">{{ loop.index }}</span>
+							<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
+								{{ icon.use('menu') }}
+							</div>
 						</div>
 						<div class="flex-1">
-							<input type="text" name="item_name[]" placeholder="Item Name / Description" value="{{ item.name }}" required 
+							<input type="text" name="item_name[]" placeholder="Item Name" value="{{ item.name }}" required 
 								class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 						</div>
-						<div class="w-24 sm:w-32">
+						<div class="w-16 sm:w-24">
 							<input type="number" step="1" name="item_quantity[]" placeholder="Qty" value="{{ item.quantity }}" required 
 								class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 						</div>
 						<div class="w-32 sm:w-40">
-							<input type="number" step="0.01" name="item_price[]" placeholder="Price" value="{{ item.price }}" required 
+							<input type="number" step="0.01" name="item_price[]" placeholder="Price" value="{{ item.unit_price }}" required 
+								class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+						</div>
+						<div class="w-32 sm:w-40">
+							<input type="number" step="0.01" name="labor_price[]" placeholder="Labor Price" value="{{ item.labor_price }}" required 
 								class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 						</div>
 						<button type="button" data-action="quotation-remove" class="p-2 text-fg-muted hover:text-danger-text hover:bg-danger-bg rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
@@ -98,19 +113,26 @@
 				{% endfor %}
 			{% else %}
 				<div data-quotation-row class="flex gap-3 items-center group bg-surface-2 p-2 rounded-lg border border-transparent">
-					<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
-						{{ icon.use('menu') }}
+					<div class="flex flex-col items-center justify-center min-w-[24px]">
+						<span data-quotation-item-seq class="text-[10px] leading-none">1.</span>
+						<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
+							{{ icon.use('menu') }}
+						</div>
 					</div>
 					<div class="flex-1">
-						<input type="text" name="item_name[]" placeholder="Item Name / Description" required 
+						<input type="text" name="item_name[]" placeholder="Item Name" required 
 							class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 					</div>
-					<div class="w-24 sm:w-32">
+					<div class="w-16 sm:w-24">
 						<input type="number" step="1" name="item_quantity[]" placeholder="Qty" value="1" required 
 							class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 					</div>
 					<div class="w-32 sm:w-40">
 						<input type="number" step="0.01" name="item_price[]" placeholder="Price" required 
+							class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+					</div>
+					<div class="w-32 sm:w-40">
+						<input type="number" step="0.01" name="labor_price[]" placeholder="Labor Price" required 
 							class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 					</div>
 					<button type="button" data-action="quotation-remove" class="p-2 text-fg-muted hover:text-danger-text hover:bg-danger-bg rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
@@ -122,19 +144,26 @@
 		
 		<template data-quotation-template>
 			<div data-quotation-row class="flex gap-3 items-center group bg-surface-2 p-2 rounded-lg border border-transparent">
-				<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
-					{{ icon.use('menu') }}
+				<div class="flex flex-col items-center justify-center min-w-[24px]">
+					<span data-quotation-item-seq class="text-[10px] leading-none"></span>
+					<div data-quotation-drag class="cursor-grab active:cursor-grabbing text-fg-muted hover:text-fg px-1">
+						{{ icon.use('menu') }}
+					</div>
 				</div>
 				<div class="flex-1">
-					<input type="text" name="item_name[]" placeholder="Item Name / Description" required 
+					<input type="text" name="item_name[]" placeholder="Item Name" required 
 						class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 				</div>
-				<div class="w-24 sm:w-32">
+				<div class="w-16 sm:w-24">
 					<input type="number" step="0.01" name="item_quantity[]" placeholder="Qty" value="1" required 
 						class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 				</div>
 				<div class="w-32 sm:w-40">
 					<input type="number" step="0.01" name="item_price[]" placeholder="Price" required 
+						class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+				</div>
+				<div class="w-32 sm:w-40">
+					<input type="number" step="0.01" name="labor_price[]" placeholder="Labor Price" required 
 						class="w-full px-3 py-2 text-sm rounded-lg border border-line bg-surface text-fg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
 				</div>
 				<button type="button" data-action="quotation-remove" class="p-2 text-fg-muted hover:text-danger-text hover:bg-danger-bg rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
